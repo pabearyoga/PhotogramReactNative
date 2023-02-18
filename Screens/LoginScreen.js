@@ -25,13 +25,13 @@ export default function LoginScreen() {
   // console.log(Platform.OS);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
-  // const [isReady, setIsReady] = useState(false);
   const [dimensions, setDimensions] = useState(
     Dimensions.get("window").width - 16 * 2
   );
-  const [screenWidth, setScreenWidth] = useState(
-    Dimensions.get("window").width
+  const [dimensionsHeigth, setDimensionsHeigth] = useState(
+    Dimensions.get("window").height
   );
+
   const [isSecurePassword, setIsSecurePassword] = useState(true);
   const [loginFocus, setLoginFocus] = useState(false);
   const [passwordFocus, setPasswordFocus] = useState(false);
@@ -43,10 +43,10 @@ export default function LoginScreen() {
   useEffect(() => {
     const onChange = () => {
       const width = Dimensions.get("window").width - 16 * 2;
-      const screenWidth = Dimensions.get("window").width;
+      const height = Dimensions.get("window").height;
 
       setDimensions(width);
-      setScreenWidth(screenWidth);
+      setDimensionsHeigth(height);
     };
     const subscription = Dimensions.addEventListener("change", onChange);
     return () => subscription.remove();
@@ -89,11 +89,14 @@ export default function LoginScreen() {
     return null;
   }
 
-  // console.log(Keyboard.isVisible());
-
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
-      <View style={styles.container} onLayout={onLayoutRootView}>
+      <View
+        style={{
+          ...styles.container,
+        }}
+        onLayout={onLayoutRootView}
+      >
         <ImageBackground
           style={styles.image}
           source={require("../assets/images/Photo_BG.png")}
@@ -104,7 +107,9 @@ export default function LoginScreen() {
             <View
               style={{
                 ...styles.formWrapper,
-                width: screenWidth,
+                width: dimensions + 16 * 2,
+                marginTop: dimensions > dimensionsHeigth ? 190 : 0,
+                // marginBottom: dimensions > dimensionsHeigth ? -150 : 0,
               }}
             >
               <View
@@ -169,7 +174,7 @@ export default function LoginScreen() {
                 </View>
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  style={{ ...styles.btn }}
+                  style={styles.btn}
                   onPress={formSubmit}
                 >
                   <Text style={styles.btnTitle}>Войти</Text>
@@ -204,6 +209,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   formWrapper: {
+    // flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
     borderTopLeftRadius: 25,
@@ -234,9 +240,10 @@ const styles = StyleSheet.create({
     marginTop: 40,
     justifyContent: "center",
     alignItems: "center",
-    marginHorizontal: 43,
     backgroundColor: "#FF6C00",
     borderColor: "transparent",
+    paddingVertical: 16,
+    paddingHorizontal: 32,
   },
   btnTitle: {
     color: "#ffffff",
