@@ -1,77 +1,3 @@
-// import React, { useState, useEffect } from "react";
-// import {
-//   StyleSheet,
-//   View,
-//   TextInput,
-//   Platform,
-//   KeyboardAvoidingView,
-//   Keyboard,
-//   TouchableWithoutFeedback,
-//   Button,
-// } from "react-native";
-
-// export default function LoginScreen() {
-//   const [name, setName] = useState("");
-//   const [password, setPassword] = useState("");
-
-//   const nameHandler = (text) => setName(text);
-//   const passwordHandler = (text) => setPassword(text);
-
-//   const onLogin = () => {
-//     Alert.alert("Credentials", `${name} + ${password}`);
-//   };
-
-//   return (
-//     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-//       <View style={styles.container}>
-//         <KeyboardAvoidingView
-//           behavior={Platform.OS == "ios" ? "padding" : "height"}
-//         >
-//           <TextInput
-//             value={name}
-//             onChangeText={nameHandler}
-//             placeholder="Адрес электронной почты"
-//             style={styles.input}
-//           />
-//           <TextInput
-//             value={password}
-//             onChangeText={passwordHandler}
-//             placeholder="Пароль"
-//             secureTextEntry={true}
-//             style={styles.input}
-//           />
-//           <Button
-//             title={"Войти"}
-//             style={styles.button}
-//             onPress={onLogin}
-//             color="red"
-//             backgroundColor="orange"
-//           />
-//         </KeyboardAvoidingView>
-//       </View>
-//     </TouchableWithoutFeedback>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     alignItems: "center",
-//     justifyContent: "center",
-//     backgroundColor: "#ecf0f1",
-//   },
-//   input: {
-//     width: 200,
-//     height: 44,
-//     padding: 10,
-//     borderWidth: 1,
-//     borderColor: "#E8E8E8",
-//     backgroundColor: "#F6F6F6",
-//     marginBottom: 10,
-//     borderRadius: 8,
-//   },
-// });
-
 import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
@@ -85,6 +11,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Dimensions,
+  Button,
 } from "react-native";
 
 // import * as Font from "expo-font";
@@ -190,15 +117,22 @@ export default function LoginScreen() {
                     }
                   />
                 </View>
-                {/* <View> */}
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  style={styles.btn}
+                  style={{ ...styles.btn }}
                   onPress={keyboardHide}
                 >
                   <Text style={styles.btnTitle}>Войти</Text>
                 </TouchableOpacity>
-                {/* </View> */}
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={styles.registerLink}
+                  // onPress={keyboardHide}
+                >
+                  <Text style={styles.registerLinkTitle}>
+                    Нет аккаунта? Зарегистрироваться
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           </KeyboardAvoidingView>
@@ -245,9 +179,11 @@ const styles = StyleSheet.create({
     // fontFamily: "DMMono-Regular",
   },
   btn: {
+    // flex: 1,
     borderRadius: 100,
     borderWidth: 1,
     height: 51,
+    // width: 100,
     marginTop: 40,
     justifyContent: "center",
     alignItems: "center",
@@ -268,5 +204,14 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 40,
     color: "#212121",
+  },
+  registerLink: {
+    alignItems: "center",
+    marginTop: 16,
+  },
+  registerLinkTitle: {
+    fontSize: 16,
+    color: "#1B4371",
+    alignItems: "center",
   },
 });
