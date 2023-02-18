@@ -11,29 +11,18 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Dimensions,
-  Button,
 } from "react-native";
-
-// import * as Font from "expo-font";
-// // import { AppLoading } from "expo";
-// import AppLoading from "expo-app-loading";
 
 const initialState = {
   email: "",
   password: "",
 };
 
-// const loadApplication = async () => {
-//   await Font.loadAsync({
-//     "DMMono-Regular": require("../assets/fonts/DMMono-Regular.ttf"),
-//   });
-// };
-
 export default function LoginScreen() {
   // console.log(Platform.OS);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
-  const [isReady, setIsReady] = useState(false);
+  // const [isReady, setIsReady] = useState(false);
   const [dimensions, setDimensions] = useState(
     Dimensions.get("window").width - 16 * 2
   );
@@ -48,29 +37,29 @@ export default function LoginScreen() {
     return focus ? { ...styles.input, ...styles.inputFocus } : styles.input;
   };
 
+  // useEffect(() => {
+  //   const onChange = () => {
+  //     const width = Dimensions.get("window").width - 16 * 2;
+
+  //     setDimensions(width);
+  //   };
+  //   Dimensions.addEventListener("change", onChange);
+  //   return () => {
+  //     Dimensions.addEventListener("change", onChange).remove();
+  //   };
+  // });
+
   useEffect(() => {
     const onChange = () => {
       const width = Dimensions.get("window").width - 16 * 2;
+      const screenWidth = Dimensions.get("window").width;
 
       setDimensions(width);
+      setScreenWidth(screenWidth);
     };
-    Dimensions.addEventListener("change", onChange);
-    return () => {
-      Dimensions.removeEventListener("change", onChange);
-    };
-  }, []);
-
-  useEffect(() => {
-    const onChange = () => {
-      const width = Dimensions.get("window").width;
-
-      setScreenWidth(width);
-    };
-    Dimensions.addEventListener("change", onChange);
-    return () => {
-      Dimensions.removeEventListener("change", onChange);
-    };
-  }, []);
+    const subscription = Dimensions.addEventListener("change", onChange);
+    return () => subscription.remove();
+  });
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -92,15 +81,6 @@ export default function LoginScreen() {
   };
 
   const showPasswordBtn = isSecurePassword ? "Показать" : "Cкрыть";
-  // if (!isReady) {
-  //   return (
-  //     <AppLoading
-  //       startAsync={loadApplication}
-  //       onFinish={() => setIsReady(true)}
-  //       onError={console.warn}
-  //     />
-  //   );
-  // }
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -116,7 +96,7 @@ export default function LoginScreen() {
               <View
                 style={{
                   ...styles.form,
-                  marginBottom: isShowKeyboard ? -100 : 200,
+                  marginBottom: isShowKeyboard ? -100 : 190,
                   width: dimensions,
                 }}
               >
@@ -134,7 +114,10 @@ export default function LoginScreen() {
                     onBlur={() => setLoginFocus(false)}
                     value={state.email}
                     onChangeText={(value) =>
-                      setState((prevState) => ({ ...prevState, email: value }))
+                      setState((prevState) => ({
+                        ...prevState,
+                        email: value,
+                      }))
                     }
                   />
                 </View>
@@ -172,7 +155,7 @@ export default function LoginScreen() {
                   style={{ ...styles.btn }}
                   onPress={formSubmit}
                 >
-                  <Text style={styles.btnTitle}>Войти</Text>
+                  <Text style={styles.btnTitle}>Войти!!!</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   activeOpacity={0.8}
@@ -226,7 +209,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 16,
 
-    // fontFamily: "DMMono-Regular",
+    // fontFamily: "Roboto-Regulat",
   },
   btn: {
     borderRadius: 100,
@@ -242,7 +225,7 @@ const styles = StyleSheet.create({
   btnTitle: {
     color: "#ffffff",
     fontSize: 16,
-    // fontFamily: "DMMono-Regular",
+    // fontFamily: "Roboto-Regulat",
   },
   header: {
     alignItems: "center",
@@ -250,7 +233,9 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
   headerTitle: {
-    fontSize: 40,
+    // fontFamily: "Roboto-Regular",
+    // fontWeight: 900,
+    fontSize: 30,
     color: "#212121",
   },
   registerLink: {
