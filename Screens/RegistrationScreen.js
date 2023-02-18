@@ -17,11 +17,12 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
 const initialState = {
+  login: "",
   email: "",
   password: "",
 };
 
-export default function LoginScreen() {
+export default function RegistrationScreen() {
   // console.log(Platform.OS);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
@@ -33,6 +34,7 @@ export default function LoginScreen() {
   );
 
   const [isSecurePassword, setIsSecurePassword] = useState(true);
+  const [emailFocus, setEmailFocus] = useState(false);
   const [loginFocus, setLoginFocus] = useState(false);
   const [passwordFocus, setPasswordFocus] = useState(false);
 
@@ -108,30 +110,59 @@ export default function LoginScreen() {
               style={{
                 ...styles.formWrapper,
                 width: dimensions + 16 * 2,
-                marginTop: dimensions > dimensionsHeigth ? 190 : 0,
-                // marginBottom: dimensions > dimensionsHeigth ? -150 : 0,
+                marginTop: dimensions > dimensionsHeigth ? 100 : 0,
               }}
             >
+              <View style={styles.avatarWrapper}>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={styles.addAvatarBtn}
+                  // onPress={}
+                >
+                  <Text style={styles.addAvatarBtnTitle}>+</Text>
+                </TouchableOpacity>
+              </View>
+
               <View
                 style={{
-                  // ...styles.form,
-                  marginBottom: isShowKeyboard ? -70 : 170,
+                  marginBottom: isShowKeyboard ? -100 : 100,
                   width: dimensions,
                 }}
               >
                 <View style={styles.header}>
-                  <Text style={styles.headerTitle}>Войти</Text>
+                  <Text style={styles.headerTitle}>Регистрация</Text>
                 </View>
                 <View>
                   <TextInput
                     style={focusInputStyle(loginFocus)}
                     textAlign={"flex-start"}
-                    placeholder="Адрес электронной почты"
+                    placeholder="Логин"
                     onFocus={() => {
                       setIsShowKeyboard(true), setLoginFocus(true);
                     }}
                     onBlur={() => {
                       setIsShowKeyboard(false), setLoginFocus(false);
+                    }}
+                    value={state.login}
+                    onChangeText={(value) =>
+                      setState((prevState) => ({
+                        ...prevState,
+                        login: value,
+                      }))
+                    }
+                  />
+                </View>
+
+                <View style={{ marginTop: 16 }}>
+                  <TextInput
+                    style={focusInputStyle(emailFocus)}
+                    textAlign={"flex-start"}
+                    placeholder="Адрес электронной почты"
+                    onFocus={() => {
+                      setIsShowKeyboard(true), setEmailFocus(true);
+                    }}
+                    onBlur={() => {
+                      setIsShowKeyboard(false), setEmailFocus(false);
                     }}
                     value={state.email}
                     onChangeText={(value) =>
@@ -177,7 +208,7 @@ export default function LoginScreen() {
                   style={styles.btn}
                   onPress={formSubmit}
                 >
-                  <Text style={styles.btnTitle}>Войти</Text>
+                  <Text style={styles.btnTitle}>Зарегистрироваться</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   activeOpacity={0.8}
@@ -185,7 +216,7 @@ export default function LoginScreen() {
                   // onPress={}
                 >
                   <Text style={styles.registerLinkTitle}>
-                    Нет аккаунта? Зарегистрироваться
+                    Уже есть аккаунт? Войти
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -208,21 +239,40 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
   },
+  avatarWrapper: {
+    width: 120,
+    height: 120,
+    backgroundColor: "#F6F6F6",
+    borderRadius: 16,
+    position: "absolute",
+    top: -60,
+  },
+  addAvatarBtn: {
+    position: "absolute",
+    bottom: 20,
+    right: -12,
+    borderWidth: 1,
+    borderColor: "#FF6C00",
+    borderRadius: 100,
+    width: 25,
+    height: 25,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  addAvatarBtnTitle: {
+    color: "#FF6C00",
+  },
   formWrapper: {
-    // flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
-  // form: {
-  //   marginHorizontal: 40,
-  // },
+
   input: {
     fontFamily: "Roboto-Regular",
 
     color: "#BDBDBD",
-    // marginBottom: 10,
     fontSize: 16,
     borderWidth: 1,
     borderColor: "#E8E8E8",
@@ -253,7 +303,7 @@ const styles = StyleSheet.create({
   header: {
     alignItems: "center",
     marginBottom: 32,
-    marginTop: 32,
+    marginTop: 92,
   },
   headerTitle: {
     fontFamily: "Roboto-Medium",
