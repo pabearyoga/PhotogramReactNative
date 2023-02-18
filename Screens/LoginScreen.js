@@ -75,7 +75,6 @@ export default function LoginScreen() {
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-    // setState(initialState);
   };
 
   const formSubmit = () => {
@@ -83,15 +82,16 @@ export default function LoginScreen() {
     Keyboard.dismiss();
     setState(initialState);
     setIsSecurePassword(true);
+    console.log(state);
   };
 
   const passwordShown = () => {
     isSecurePassword === true
       ? setIsSecurePassword(false)
       : setIsSecurePassword(true);
-    console.log(isSecurePassword);
   };
 
+  const showPasswordBtn = isSecurePassword ? "Показать" : "Cкрыть";
   // if (!isReady) {
   //   return (
   //     <AppLoading
@@ -158,10 +158,13 @@ export default function LoginScreen() {
                   />
                   <TouchableOpacity
                     activeOpacity={0.8}
-                    // style={}
+                    style={styles.passwordShowBtn}
                     onPress={passwordShown}
                   >
-                    <Text style={styles.registerLinkTitle}>Показать</Text>
+                    <Text style={styles.registerLinkTitle}>
+                      {/* показать */}
+                      {showPasswordBtn}
+                    </Text>
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity
@@ -258,5 +261,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#1B4371",
     alignItems: "center",
+  },
+  passwordShowBtn: {
+    position: "absolute",
+    top: 16,
+    right: 16,
   },
 });
