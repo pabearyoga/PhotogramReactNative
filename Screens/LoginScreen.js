@@ -32,18 +32,39 @@ const initialState = {
 export default function LoginScreen() {
   // console.log(Platform.OS);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [state, setstate] = useState(initialState);
-  const [iasReady, setIasReady] = useState(false);
-
-  const [dimensions, setdimensions] = useState(
+  const [state, setState] = useState(initialState);
+  const [isReady, setIsReady] = useState(false);
+  const [dimensions, setDimensions] = useState(
     Dimensions.get("window").width - 16 * 2
   );
+  const [screenWidth, setScreenWidth] = useState(
+    Dimensions.get("window").width
+  );
+  const [isSecurePassword, setIsSecurePassword] = useState(true);
+  const [loginFocus, setLoginFocus] = useState(false);
+  const [passwordFocus, setPasswordFocus] = useState(false);
+
+  const focusInputStyle = (focus) => {
+    return focus ? { ...styles.input, ...styles.inputFocus } : styles.input;
+  };
 
   useEffect(() => {
     const onChange = () => {
       const width = Dimensions.get("window").width - 16 * 2;
 
-      setdimensions(width);
+      setDimensions(width);
+    };
+    Dimensions.addEventListener("change", onChange);
+    return () => {
+      Dimensions.removeEventListener("change", onChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    const onChange = () => {
+      const width = Dimensions.get("window").width;
+
+      setScreenWidth(width);
     };
     Dimensions.addEventListener("change", onChange);
     return () => {
@@ -54,15 +75,28 @@ export default function LoginScreen() {
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-    console.log(state);
-    setstate(initialState);
+    // setState(initialState);
   };
 
-  // if (!iasReady) {
+  const formSubmit = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+    setState(initialState);
+    setIsSecurePassword(true);
+  };
+
+  const passwordShown = () => {
+    isSecurePassword === true
+      ? setIsSecurePassword(false)
+      : setIsSecurePassword(true);
+    console.log(isSecurePassword);
+  };
+
+  // if (!isReady) {
   //   return (
   //     <AppLoading
   //       startAsync={loadApplication}
-  //       onFinish={() => setIasReady(true)}
+  //       onFinish={() => setIsReady(true)}
   //       onError={console.warn}
   //     />
   //   );
@@ -78,11 +112,11 @@ export default function LoginScreen() {
           <KeyboardAvoidingView
             behavior={Platform.OS == "ios" ? "padding" : "height"}
           >
-            <View style={styles.formWrapper}>
+            <View style={{ ...styles.formWrapper, width: screenWidth }}>
               <View
                 style={{
                   ...styles.form,
-                  marginBottom: isShowKeyboard ? 20 : 150,
+                  marginBottom: isShowKeyboard ? -100 : 150,
                   width: dimensions,
                 }}
               >
@@ -91,36 +125,49 @@ export default function LoginScreen() {
                 </View>
                 <View>
                   <TextInput
-                    style={styles.input}
+                    style={focusInputStyle(loginFocus)}
                     textAlign={"flex-start"}
                     placeholder="Адрес электронной почты"
-                    onFocus={() => setIsShowKeyboard(true)}
+                    onFocus={() => {
+                      setIsShowKeyboard(true), setLoginFocus(true);
+                    }}
+                    onBlur={() => setLoginFocus(false)}
                     value={state.email}
                     onChangeText={(value) =>
-                      setstate((prevState) => ({ ...prevState, email: value }))
+                      setState((prevState) => ({ ...prevState, email: value }))
                     }
                   />
                 </View>
                 <View style={{ marginTop: 16 }}>
                   <TextInput
-                    style={styles.input}
+                    style={focusInputStyle(passwordFocus)}
                     textAlign={"flex-start"}
                     placeholder="Пароль"
-                    secureTextEntry={true}
-                    onFocus={() => setIsShowKeyboard(true)}
+                    secureTextEntry={isSecurePassword}
+                    onFocus={() => {
+                      setIsShowKeyboard(true), setPasswordFocus(true);
+                    }}
+                    onBlur={() => setPasswordFocus(false)}
                     value={state.password}
                     onChangeText={(value) =>
-                      setstate((prevState) => ({
+                      setState((prevState) => ({
                         ...prevState,
                         password: value,
                       }))
                     }
                   />
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    // style={}
+                    onPress={passwordShown}
+                  >
+                    <Text style={styles.registerLinkTitle}>Показать</Text>
+                  </TouchableOpacity>
                 </View>
                 <TouchableOpacity
                   activeOpacity={0.8}
                   style={{ ...styles.btn }}
-                  onPress={keyboardHide}
+                  onPress={formSubmit}
                 >
                   <Text style={styles.btnTitle}>Войти</Text>
                 </TouchableOpacity>
@@ -156,7 +203,6 @@ const styles = StyleSheet.create({
   formWrapper: {
     backgroundColor: "#fff",
     alignItems: "center",
-    width: Dimensions.get("window").width,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
@@ -171,6 +217,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F6F6F6",
     padding: 16,
   },
+  inputFocus: { backgroundColor: "#fff", borderColor: "#FF6C00" },
   inputTitle: {
     color: "#BDBDBD",
     marginBottom: 10,
@@ -179,11 +226,9 @@ const styles = StyleSheet.create({
     // fontFamily: "DMMono-Regular",
   },
   btn: {
-    // flex: 1,
     borderRadius: 100,
     borderWidth: 1,
     height: 51,
-    // width: 100,
     marginTop: 40,
     justifyContent: "center",
     alignItems: "center",
