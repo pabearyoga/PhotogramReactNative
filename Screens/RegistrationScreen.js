@@ -22,7 +22,7 @@ const initialState = {
   password: "",
 };
 
-export default function RegistrationScreen() {
+export default function RegistrationScreen({ navigation }) {
   // console.log(Platform.OS);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
@@ -110,7 +110,7 @@ export default function RegistrationScreen() {
               style={{
                 ...styles.formWrapper,
                 width: dimensions + 16 * 2,
-                marginTop: dimensions > dimensionsHeigth ? 100 : 0,
+                marginTop: dimensions > dimensionsHeigth ? 200 : 0,
               }}
             >
               <View style={styles.avatarWrapper}>
@@ -213,7 +213,7 @@ export default function RegistrationScreen() {
                 <TouchableOpacity
                   activeOpacity={0.8}
                   style={styles.registerLink}
-                  // onPress={}
+                  onPress={() => navigation.navigate("LoginScreen")}
                 >
                   <Text style={styles.registerLinkTitle}>
                     Уже есть аккаунт? Войти
