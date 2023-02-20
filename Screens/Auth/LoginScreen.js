@@ -17,12 +17,11 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
 const initialState = {
-  login: "",
   email: "",
   password: "",
 };
 
-export default function RegistrationScreen({ navigation }) {
+export default function LoginScreen({ navigation }) {
   // console.log(Platform.OS);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
@@ -34,7 +33,6 @@ export default function RegistrationScreen({ navigation }) {
   );
 
   const [isSecurePassword, setIsSecurePassword] = useState(true);
-  const [emailFocus, setEmailFocus] = useState(false);
   const [loginFocus, setLoginFocus] = useState(false);
   const [passwordFocus, setPasswordFocus] = useState(false);
 
@@ -77,8 +75,8 @@ export default function RegistrationScreen({ navigation }) {
   SplashScreen.preventAutoHideAsync();
 
   const [fontsLoaded] = useFonts({
-    "Roboto-Regular": require("../assets/fonts/Roboto-Regular.ttf"),
-    "Roboto-Medium": require("../assets/fonts/Roboto-Medium.ttf"),
+    "Roboto-Regular": require("../../assets/fonts/Roboto-Regular.ttf"),
+    "Roboto-Medium": require("../../assets/fonts/Roboto-Medium.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -101,7 +99,7 @@ export default function RegistrationScreen({ navigation }) {
       >
         <ImageBackground
           style={styles.image}
-          source={require("../assets/images/Photo_BG.png")}
+          source={require("../../assets/images/Photo_BG.png")}
         >
           <KeyboardAvoidingView
             behavior={Platform.OS == "ios" ? "padding" : "height"}
@@ -111,58 +109,29 @@ export default function RegistrationScreen({ navigation }) {
                 ...styles.formWrapper,
                 width: dimensions + 16 * 2,
                 marginTop: dimensions > dimensionsHeigth ? 200 : 0,
+                // marginBottom: dimensions > dimensionsHeigth ? -150 : 0,
               }}
             >
-              <View style={styles.avatarWrapper}>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  style={styles.addAvatarBtn}
-                  // onPress={}
-                >
-                  <Text style={styles.addAvatarBtnTitle}>+</Text>
-                </TouchableOpacity>
-              </View>
-
               <View
                 style={{
-                  marginBottom: isShowKeyboard ? -100 : 100,
+                  // ...styles.form,
+                  marginBottom: isShowKeyboard ? -90 : 170,
                   width: dimensions,
                 }}
               >
                 <View style={styles.header}>
-                  <Text style={styles.headerTitle}>Регистрация</Text>
+                  <Text style={styles.headerTitle}>Войти</Text>
                 </View>
                 <View>
                   <TextInput
                     style={focusInputStyle(loginFocus)}
                     textAlign={"flex-start"}
-                    placeholder="Логин"
+                    placeholder="Адрес электронной почты"
                     onFocus={() => {
                       setIsShowKeyboard(true), setLoginFocus(true);
                     }}
                     onBlur={() => {
                       setIsShowKeyboard(false), setLoginFocus(false);
-                    }}
-                    value={state.login}
-                    onChangeText={(value) =>
-                      setState((prevState) => ({
-                        ...prevState,
-                        login: value,
-                      }))
-                    }
-                  />
-                </View>
-
-                <View style={{ marginTop: 16 }}>
-                  <TextInput
-                    style={focusInputStyle(emailFocus)}
-                    textAlign={"flex-start"}
-                    placeholder="Адрес электронной почты"
-                    onFocus={() => {
-                      setIsShowKeyboard(true), setEmailFocus(true);
-                    }}
-                    onBlur={() => {
-                      setIsShowKeyboard(false), setEmailFocus(false);
                     }}
                     value={state.email}
                     onChangeText={(value) =>
@@ -208,15 +177,15 @@ export default function RegistrationScreen({ navigation }) {
                   style={styles.btn}
                   onPress={formSubmit}
                 >
-                  <Text style={styles.btnTitle}>Зарегистрироваться</Text>
+                  <Text style={styles.btnTitle}>Войти</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   activeOpacity={0.8}
                   style={styles.registerLink}
-                  onPress={() => navigation.navigate("LoginScreen")}
+                  onPress={() => navigation.navigate("RegistrationScreen")}
                 >
                   <Text style={styles.registerLinkTitle}>
-                    Уже есть аккаунт? Войти
+                    Нет аккаунта? Зарегистрироваться
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -239,40 +208,21 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
   },
-  avatarWrapper: {
-    width: 120,
-    height: 120,
-    backgroundColor: "#F6F6F6",
-    borderRadius: 16,
-    position: "absolute",
-    top: -60,
-  },
-  addAvatarBtn: {
-    position: "absolute",
-    bottom: 20,
-    right: -12,
-    borderWidth: 1,
-    borderColor: "#FF6C00",
-    borderRadius: 100,
-    width: 25,
-    height: 25,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  addAvatarBtnTitle: {
-    color: "#FF6C00",
-  },
   formWrapper: {
+    // flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
-
+  // form: {
+  //   marginHorizontal: 40,
+  // },
   input: {
     fontFamily: "Roboto-Regular",
 
     color: "#BDBDBD",
+    // marginBottom: 10,
     fontSize: 16,
     borderWidth: 1,
     borderColor: "#E8E8E8",
@@ -303,7 +253,7 @@ const styles = StyleSheet.create({
   header: {
     alignItems: "center",
     marginBottom: 32,
-    marginTop: 92,
+    marginTop: 32,
   },
   headerTitle: {
     fontFamily: "Roboto-Medium",

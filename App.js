@@ -1,39 +1,50 @@
-// export default function App() {
-//   return <LoginScreen />;
-//   // return <RegistrationScreen />;
-// }
-
 import React from "react";
+
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import LoginScreen from "./Screens/LoginScreen";
-import RegistrationScreen from "./Screens/RegistrationScreen";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-// import Login from "./screens/Login";
-// import Register from "./screens/Register";
-// import Home from "./screens/Home";
+import LoginScreen from "./Screens/Auth/LoginScreen";
+import RegistrationScreen from "./Screens/Auth/RegistrationScreen";
+import { PostsScreen } from "./Screens/Home/PostsScreen";
+import { CreatePostsScreen } from "./Screens/Home/CreatePostsScreen";
+import { ProfileScreen } from "./Screens/Home/ProfileScreen";
 
-const MainStack = createStackNavigator();
+const AuthStack = createStackNavigator();
+const MainTab = createBottomTabNavigator();
 
-export default function App() {
-  return (
-    <NavigationContainer>
-      <MainStack.Navigator initialRouteName="LoginScreen">
-        <MainStack.Screen
+const useRoute = (isAuth) => {
+  if (!isAuth) {
+    return (
+      <AuthStack.Navigator initialRouteName="LoginScreen">
+        <AuthStack.Screen
           name="RegistrationScreen"
           component={RegistrationScreen}
           options={{
             headerShown: false,
           }}
         />
-        <MainStack.Screen
+        <AuthStack.Screen
           name="LoginScreen"
           component={LoginScreen}
           options={{
             headerShown: false,
           }}
         />
-      </MainStack.Navigator>
-    </NavigationContainer>
+      </AuthStack.Navigator>
+    );
+  }
+  return (
+    <MainTab.Navigator>
+      <MainTab.Screen name="Posts" component={PostsScreen} />
+      <MainTab.Screen name="Create" component={CreatePostsScreen} />
+      <MainTab.Screen name="Profile" component={ProfileScreen} />
+    </MainTab.Navigator>
   );
+};
+
+export default function App() {
+  const routing = useRoute(false);
+
+  return <NavigationContainer>{routing}</NavigationContainer>;
 }
