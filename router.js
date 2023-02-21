@@ -1,4 +1,4 @@
-import { Button } from "react-native";
+import { Button, TouchableOpacity, Text } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
@@ -9,8 +9,7 @@ import { CreatePostsScreen } from "./Screens/Home/CreatePostsScreen";
 import { ProfileScreen } from "./Screens/Home/ProfileScreen";
 
 import { SimpleLineIcons } from "@expo/vector-icons";
-import { Fontisto } from "@expo/vector-icons";
-import { Feather } from "@expo/vector-icons";
+import { Fontisto, Feather, AntDesign } from "@expo/vector-icons";
 
 const AuthStack = createStackNavigator();
 const MainTab = createBottomTabNavigator();
@@ -60,11 +59,12 @@ export const useRoute = (isAuth) => {
           ),
 
           headerRight: () => (
-            <Button
-              onPress={() => alert("This is a button!")}
-              title="Logout"
-              color="red"
-            />
+            <TouchableOpacity
+              style={{ marginRight: 20 }}
+              onPress={() => console.log("logout")}
+            >
+              <Feather name="log-out" size={24} color="#BDBDBD" />
+            </TouchableOpacity>
           ),
         }}
         name="Публикации"
@@ -76,7 +76,17 @@ export const useRoute = (isAuth) => {
             <Fontisto name="plus-a" size={18} color={color} />
           ),
           headerLeft: () => (
-            <Button onPress={() => goBack()} title="Back" color="red" />
+            // <Button onPress={() => goBack()} title="Back" color="red" />
+            <TouchableOpacity
+              style={{ marginLeft: 20 }}
+              onPress={() => goBack()}
+            >
+              <AntDesign
+                name="arrowleft"
+                size={24}
+                color={"rgba(33, 33, 33, 0.8)"}
+              />
+            </TouchableOpacity>
           ),
           tabBarStyle: {
             display: "none",
