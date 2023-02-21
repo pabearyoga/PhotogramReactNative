@@ -32,10 +32,8 @@ export const useRoute = (isAuth) => {
       </AuthStack.Navigator>
     );
   }
-  // console.log(navigation);
   return (
     <MainTab.Navigator
-      backBehavior={"history"}
       screenOptions={{
         headerStyle: {
           borderBottomWidth: 1,
