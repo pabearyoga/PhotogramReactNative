@@ -76,9 +76,11 @@ export const useRoute = (isAuth) => {
             <Fontisto name="plus-a" size={18} color={color} />
           ),
           headerLeft: () => (
-            // <Button onPress={() => goBack()} title="Back" color="red" />
             <TouchableOpacity
-              style={{ marginLeft: 20 }}
+              style={{
+                paddingHorizontal: 20,
+                paddingVertical: 10,
+              }}
               onPress={() => goBack()}
             >
               <AntDesign
