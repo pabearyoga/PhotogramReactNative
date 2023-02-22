@@ -33,6 +33,7 @@ export const CreatePostsScreen = () => {
   const [state, setState] = useState(initialState);
   const [nameFocus, setNameFocus] = useState(false);
   const [locationFocus, setLocationFocus] = useState(false);
+
   // screen width
   const [dimensions, setDimensions] = useState(
     Dimensions.get("window").width - 16 * 2
@@ -126,20 +127,22 @@ export const CreatePostsScreen = () => {
     setState(initialState);
   };
 
-  // const [image, setImage] = useState(null);
-  // // input
-  // const [state, setState] = useState(initialState);
-  // const [nameFocus, setNameFocus] = useState(false);
-  // const [locationFocus, setLocationFocus] = useState(false);
-  // // screen width
-  // const [dimensions, setDimensions] = useState(
-  //   Dimensions.get("window").width - 16 * 2
-  // );
-  // const [dimensionsHeigth, setDimensionsHeigth] = useState(
-  //   Dimensions.get("window").height
-  // );
-  // // keyboard
-  // const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  // btnSubmitDisabled
+  const isFormValid = state.name && state.location && image;
+
+  const btnSubmitDisabled = (isFormValid) => {
+    return isFormValid
+      ? { ...styles.btn, backgroundColor: "#F6F6F6" }
+      : styles.btn;
+  };
+
+  const btnTitleDisabled = (isFormValid) => {
+    return isFormValid
+      ? { ...styles.btnTitle, color: "#BDBDBD" }
+      : styles.btnTitle;
+  };
+
+  // btnTitle;
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -228,10 +231,11 @@ export const CreatePostsScreen = () => {
               </View>
               <TouchableOpacity
                 activeOpacity={0.8}
-                style={styles.btn}
+                style={btnSubmitDisabled(!isFormValid)}
                 onPress={formSubmit}
+                disabled={!isFormValid}
               >
-                <Text style={styles.btnTitle}>Опубликовать</Text>
+                <Text style={btnTitleDisabled(!isFormValid)}>Опубликовать</Text>
               </TouchableOpacity>
             </View>
             <View
