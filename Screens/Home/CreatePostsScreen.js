@@ -12,7 +12,11 @@ import {
   Keyboard,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { FontAwesome, SimpleLineIcons } from "@expo/vector-icons";
+import {
+  FontAwesome,
+  SimpleLineIcons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
@@ -116,6 +120,27 @@ export const CreatePostsScreen = () => {
     setState(initialState);
     console.log(state);
   };
+
+  const clearForm = () => {
+    setImage(null);
+    setState(initialState);
+  };
+
+  // const [image, setImage] = useState(null);
+  // // input
+  // const [state, setState] = useState(initialState);
+  // const [nameFocus, setNameFocus] = useState(false);
+  // const [locationFocus, setLocationFocus] = useState(false);
+  // // screen width
+  // const [dimensions, setDimensions] = useState(
+  //   Dimensions.get("window").width - 16 * 2
+  // );
+  // const [dimensionsHeigth, setDimensionsHeigth] = useState(
+  //   Dimensions.get("window").height
+  // );
+  // // keyboard
+  // const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container} onLayout={onLayoutRootView}>
@@ -209,6 +234,25 @@ export const CreatePostsScreen = () => {
                 <Text style={styles.btnTitle}>Опубликовать</Text>
               </TouchableOpacity>
             </View>
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 120,
+              }}
+            >
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={styles.clearBtn}
+                onPress={clearForm}
+              >
+                <MaterialCommunityIcons
+                  name="trash-can-outline"
+                  size={24}
+                  color="#DADADA"
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </KeyboardAvoidingView>
       </View>
@@ -292,5 +336,13 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     fontFamily: "Roboto-Regular",
+  },
+  clearBtn: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F6F6F6",
+    width: 70,
+    height: 40,
+    borderRadius: 50,
   },
 });
