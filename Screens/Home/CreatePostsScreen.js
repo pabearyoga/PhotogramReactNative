@@ -24,6 +24,7 @@ import * as SplashScreen from "expo-splash-screen";
 const initialState = {
   name: "",
   location: "",
+  image: "",
 };
 
 export const CreatePostsScreen = () => {
@@ -70,6 +71,10 @@ export const CreatePostsScreen = () => {
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+      setState((prevState) => ({
+        ...prevState,
+        image: result.assets[0].uri,
+      }));
     }
   };
 
@@ -105,7 +110,6 @@ export const CreatePostsScreen = () => {
   }
 
   // keyboard
-
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
@@ -141,8 +145,6 @@ export const CreatePostsScreen = () => {
       ? { ...styles.btnTitle, color: "#BDBDBD" }
       : styles.btnTitle;
   };
-
-  // btnTitle;
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
