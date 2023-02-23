@@ -1,7 +1,12 @@
-import LoginScreen from "./Screens/LoginScreen";
-import RegistrationScreen from "./Screens/RegistrationScreen";
+import React from "react";
+
+import { NavigationContainer } from "@react-navigation/native";
+
+import { useRoute } from "./router";
 
 export default function App() {
-  return <LoginScreen />;
-  // return <RegistrationScreen />;
+  const routing = useRoute(false);
+  // const routing = useRoute(true);
+
+  return <NavigationContainer>{routing}</NavigationContainer>;
 }

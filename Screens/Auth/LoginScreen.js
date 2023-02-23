@@ -21,7 +21,7 @@ const initialState = {
   password: "",
 };
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }) {
   // console.log(Platform.OS);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
@@ -75,8 +75,8 @@ export default function LoginScreen() {
   SplashScreen.preventAutoHideAsync();
 
   const [fontsLoaded] = useFonts({
-    "Roboto-Regular": require("../assets/fonts/Roboto-Regular.ttf"),
-    "Roboto-Medium": require("../assets/fonts/Roboto-Medium.ttf"),
+    "Roboto-Regular": require("../../assets/fonts/Roboto-Regular.ttf"),
+    "Roboto-Medium": require("../../assets/fonts/Roboto-Medium.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -99,7 +99,7 @@ export default function LoginScreen() {
       >
         <ImageBackground
           style={styles.image}
-          source={require("../assets/images/Photo_BG.png")}
+          source={require("../../assets/images/Photo_BG.png")}
         >
           <KeyboardAvoidingView
             behavior={Platform.OS == "ios" ? "padding" : "height"}
@@ -108,14 +108,14 @@ export default function LoginScreen() {
               style={{
                 ...styles.formWrapper,
                 width: dimensions + 16 * 2,
-                marginTop: dimensions > dimensionsHeigth ? 190 : 0,
+                marginTop: dimensions > dimensionsHeigth ? 200 : 0,
                 // marginBottom: dimensions > dimensionsHeigth ? -150 : 0,
               }}
             >
               <View
                 style={{
                   // ...styles.form,
-                  marginBottom: isShowKeyboard ? -70 : 170,
+                  marginBottom: isShowKeyboard ? -90 : 170,
                   width: dimensions,
                 }}
               >
@@ -182,7 +182,7 @@ export default function LoginScreen() {
                 <TouchableOpacity
                   activeOpacity={0.8}
                   style={styles.registerLink}
-                  // onPress={}
+                  onPress={() => navigation.navigate("RegistrationScreen")}
                 >
                   <Text style={styles.registerLinkTitle}>
                     Нет аккаунта? Зарегистрироваться

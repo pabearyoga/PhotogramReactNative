@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Image,
   ImageBackground,
   TextInput,
   TouchableOpacity,
@@ -15,6 +16,9 @@ import {
 
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import * as ImagePicker from "expo-image-picker";
+
+import { AntDesign, Feather } from "@expo/vector-icons";
 
 const initialState = {
   login: "",
@@ -22,10 +26,11 @@ const initialState = {
   password: "",
 };
 
-export default function RegistrationScreen() {
-  // console.log(Platform.OS);
+export default function RegistrationScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
+  const [image, setImage] = useState(null);
+
   const [dimensions, setDimensions] = useState(
     Dimensions.get("window").width - 16 * 2
   );
@@ -77,8 +82,8 @@ export default function RegistrationScreen() {
   SplashScreen.preventAutoHideAsync();
 
   const [fontsLoaded] = useFonts({
-    "Roboto-Regular": require("../assets/fonts/Roboto-Regular.ttf"),
-    "Roboto-Medium": require("../assets/fonts/Roboto-Medium.ttf"),
+    "Roboto-Regular": require("../../assets/fonts/Roboto-Regular.ttf"),
+    "Roboto-Medium": require("../../assets/fonts/Roboto-Medium.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -91,6 +96,53 @@ export default function RegistrationScreen() {
     return null;
   }
 
+  // img load
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+      // setState((prevState) => ({
+      //   ...prevState,
+      //   image: result.assets[0].uri,
+      // }));
+    }
+  };
+  const addImg = () => {
+    return (
+      <TouchableOpacity
+        title="Pick an image from camera roll"
+        onPress={pickImage}
+      >
+        <View style={{ backgroundColor: "#fff", borderRadius: 100 }}>
+          <AntDesign name="pluscircleo" size={24} color="#FF6C00" />
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const delleteImg = () => {
+    return (
+      <TouchableOpacity
+        title="Pick an image from camera roll"
+        onPress={() => setImage(null)}
+      >
+        <View style={{ backgroundColor: "#fff", borderRadius: 100 }}>
+          <Feather name="x-circle" size={24} color="#E8E8E8" />
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const imgAddBtn = (image) => {
+    return image ? delleteImg() : addImg();
+  };
+
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View
@@ -101,7 +153,7 @@ export default function RegistrationScreen() {
       >
         <ImageBackground
           style={styles.image}
-          source={require("../assets/images/Photo_BG.png")}
+          source={require("../../assets/images/Photo_BG.png")}
         >
           <KeyboardAvoidingView
             behavior={Platform.OS == "ios" ? "padding" : "height"}
@@ -110,17 +162,12 @@ export default function RegistrationScreen() {
               style={{
                 ...styles.formWrapper,
                 width: dimensions + 16 * 2,
-                marginTop: dimensions > dimensionsHeigth ? 100 : 0,
+                marginTop: dimensions > dimensionsHeigth ? 200 : 0,
               }}
             >
-              <View style={styles.avatarWrapper}>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  style={styles.addAvatarBtn}
-                  // onPress={}
-                >
-                  <Text style={styles.addAvatarBtnTitle}>+</Text>
-                </TouchableOpacity>
+              <View style={styles.imgWrapper}>
+                {image && <Image source={{ uri: image }} style={styles.img} />}
+                <View style={styles.addImgBtnWrapper}>{imgAddBtn(image)}</View>
               </View>
 
               <View
@@ -213,7 +260,7 @@ export default function RegistrationScreen() {
                 <TouchableOpacity
                   activeOpacity={0.8}
                   style={styles.registerLink}
-                  // onPress={}
+                  onPress={() => navigation.navigate("LoginScreen")}
                 >
                   <Text style={styles.registerLinkTitle}>
                     Уже есть аккаунт? Войти
@@ -324,5 +371,20 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 16,
     right: 16,
+  },
+  imgWrapper: {
+    alignItems: "center",
+    backgroundColor: "#F6F6F6",
+    height: 120,
+    width: 120,
+    borderRadius: 8,
+    borderColor: "#E8E8E8",
+    marginTop: -60,
+  },
+  img: { resizeMode: "cover", height: 120, width: 120, borderRadius: 8 },
+  addImgBtnWrapper: {
+    position: "absolute",
+    bottom: 14,
+    right: -12,
   },
 });
