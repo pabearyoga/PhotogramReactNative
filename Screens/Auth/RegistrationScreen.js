@@ -24,6 +24,7 @@ const initialState = {
   login: "",
   email: "",
   password: "",
+  image: "",
 };
 
 export default function RegistrationScreen({ navigation }) {
@@ -107,10 +108,10 @@ export default function RegistrationScreen({ navigation }) {
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
-      // setState((prevState) => ({
-      //   ...prevState,
-      //   image: result.assets[0].uri,
-      // }));
+      setState((prevState) => ({
+        ...prevState,
+        image: result.assets[0].uri,
+      }));
     }
   };
   const addImg = () => {
