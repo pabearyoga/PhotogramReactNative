@@ -49,7 +49,6 @@ export const PostsScreen = ({ navigation }) => {
   const [dimensions, setDimensions] = useState(
     Dimensions.get("window").width - 16 * 2
   );
-
   const [posts, setPosts] = useState(POSTS);
   const [userData, setUserData] = useState(USER_DATA);
 
@@ -87,7 +86,7 @@ export const PostsScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ width: dimensions }}>
+      <View style={{ width: dimensions }} onLayout={onLayoutRootView}>
         <FlatList
           data={posts}
           ListHeaderComponent={
