@@ -82,7 +82,6 @@ export const PostsScreen = ({ navigation }) => {
   if (!fontsLoaded) {
     return null;
   }
-  // const Item = () => {};
 
   return (
     <SafeAreaView style={styles.container}>
