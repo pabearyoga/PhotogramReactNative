@@ -33,6 +33,9 @@ export const useRoute = (isAuth) => {
   }
   return (
     <MainTab.Navigator
+      // tabBarOptions={{
+      //   showLabel: false,
+      // }}
       screenOptions={{
         headerStyle: {
           borderBottomWidth: 1,
@@ -54,20 +57,22 @@ export const useRoute = (isAuth) => {
     >
       <MainTab.Screen
         options={{
+          headerShown: false,
+
           tabBarIcon: ({ focused, size, color }) => (
             <SimpleLineIcons name="grid" size={18} color={color} />
           ),
 
-          headerRight: () => (
-            <TouchableOpacity
-              style={{ marginRight: 20 }}
-              onPress={() => console.log("logout")}
-            >
-              <Feather name="log-out" size={24} color="#BDBDBD" />
-            </TouchableOpacity>
-          ),
+          // headerRight: () => (
+          //   <TouchableOpacity
+          //     style={{ marginRight: 20 }}
+          //     onPress={() => console.log("logout")}
+          //   >
+          //     <Feather name="log-out" size={24} color="#BDBDBD" />
+          //   </TouchableOpacity>
+          // ),
         }}
-        name="Публикации"
+        name="PostsScreen"
         component={PostsScreen}
       />
       <MainTab.Screen
