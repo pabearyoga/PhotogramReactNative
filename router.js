@@ -104,7 +104,7 @@ export const useRoute = (isAuth) => {
             />
           ),
         }}
-        name="Профиль"
+        name="ProfileScreen"
         component={ProfileScreen}
       />
     </MainTab.Navigator>

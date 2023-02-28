@@ -1,13 +1,12 @@
 import React from "react";
 import { TouchableOpacity } from "react-native";
 
-// import { moduleName } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { DefaultPostsScreen } from "../Nested/DefaultPostsScreen";
 import { CommentsScreen } from "../Nested/CommentsScreen";
 import { MapScreen } from "../Nested/MapScreen";
 
-import { Feather } from "@expo/vector-icons";
+import { Fontisto, Feather, AntDesign } from "@expo/vector-icons";
 
 const NestedScreen = createStackNavigator();
 
@@ -34,10 +33,60 @@ export const PostsScreen = () => {
           ),
         }}
       />
-      <NestedScreen.Screen name="Comments" component={CommentsScreen} />
-      <NestedScreen.Screen name="Map" component={MapScreen} />
+      <NestedScreen.Screen
+        options={({ navigation: { goBack } }) => ({
+          tabBarIcon: ({ focused, size, color }) => (
+            <Fontisto name="plus-a" size={18} color={color} />
+          ),
+          headerLeft: () => (
+            <TouchableOpacity
+              style={{
+                paddingHorizontal: 20,
+                paddingVertical: 10,
+              }}
+              onPress={() => goBack()}
+            >
+              <AntDesign
+                name="arrowleft"
+                size={24}
+                color={"rgba(33, 33, 33, 0.8)"}
+              />
+            </TouchableOpacity>
+          ),
+          tabBarStyle: {
+            display: "none",
+          },
+        })}
+        name="Comments"
+        component={CommentsScreen}
+      />
+      <NestedScreen.Screen
+        options={({ navigation: { goBack } }) => ({
+          tabBarIcon: ({ focused, size, color }) => (
+            <Fontisto name="plus-a" size={18} color={color} />
+          ),
+          headerLeft: () => (
+            <TouchableOpacity
+              style={{
+                paddingHorizontal: 20,
+                paddingVertical: 10,
+              }}
+              onPress={() => goBack()}
+            >
+              <AntDesign
+                name="arrowleft"
+                size={24}
+                color={"rgba(33, 33, 33, 0.8)"}
+              />
+            </TouchableOpacity>
+          ),
+          tabBarStyle: {
+            display: "none",
+          },
+        })}
+        name="Map"
+        component={MapScreen}
+      />
     </NestedScreen.Navigator>
   );
 };
-
-// export default PostsScreen;
