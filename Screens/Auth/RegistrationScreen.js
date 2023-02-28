@@ -378,11 +378,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#F6F6F6",
     height: 120,
     width: 120,
-    borderRadius: 8,
+    borderRadius: 16,
     borderColor: "#E8E8E8",
     marginTop: -60,
   },
-  img: { resizeMode: "cover", height: 120, width: 120, borderRadius: 8 },
+  img: { resizeMode: "cover", height: 120, width: 120, borderRadius: 16 },
   addImgBtnWrapper: {
     position: "absolute",
     bottom: 14,
