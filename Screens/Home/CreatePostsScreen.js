@@ -25,8 +25,12 @@ import * as SplashScreen from "expo-splash-screen";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 
+//location
+import * as Location from "expo-location";
+
 const initialState = {
   name: "",
+  locationCoords: "",
   location: "",
   image: "",
 };
@@ -93,6 +97,16 @@ export const CreatePostsScreen = ({ navigation }) => {
     const subscription = Dimensions.addEventListener("change", onChange);
     return () => subscription.remove();
   });
+
+  //location
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+      }
+    })();
+  }, []);
 
   //font
   SplashScreen.preventAutoHideAsync();
@@ -203,9 +217,11 @@ export const CreatePostsScreen = ({ navigation }) => {
                     if (cameraRef && !image) {
                       const { uri } = await cameraRef.takePictureAsync();
                       setImage(uri);
+                      const location = await Location.getCurrentPositionAsync();
                       setState((prevState) => ({
                         ...prevState,
                         image: uri,
+                        locationCoords: location,
                       }));
                       await MediaLibrary.createAssetAsync(uri);
                     }
