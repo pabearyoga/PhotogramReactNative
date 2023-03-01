@@ -45,12 +45,19 @@ const USER_DATA = {
   image: "../../assets/images/Photo_BG.png",
 };
 
-export const DefaultPostsScreen = ({ navigation }) => {
+export const DefaultPostsScreen = ({ navigation, route }) => {
   const [dimensions, setDimensions] = useState(
     Dimensions.get("window").width - 16 * 2
   );
-  const [posts, setPosts] = useState(POSTS);
+  const [posts, setPosts] = useState([]);
   const [userData, setUserData] = useState(USER_DATA);
+
+  // postData
+  useEffect(() => {
+    if (route.params) {
+      setPosts((prevState) => [...prevState, route.params.state]);
+    }
+  }, [route.params]);
 
   // width screen
   useEffect(() => {
@@ -142,7 +149,7 @@ export const DefaultPostsScreen = ({ navigation }) => {
               </View>
             </View>
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item, indx) => indx.toString()}
         />
       </View>
     </SafeAreaView>

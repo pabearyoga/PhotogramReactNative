@@ -52,7 +52,7 @@ const USER_DATA = {
   image: "../../assets/images/Photo_BG.png",
 };
 
-export const DefaultProfileScreen = ({ navigation }) => {
+export const DefaultProfileScreen = ({ navigation, route }) => {
   const [image, setImage] = useState(null);
 
   const [dimensions, setDimensions] = useState(
@@ -60,6 +60,14 @@ export const DefaultProfileScreen = ({ navigation }) => {
   );
   const [posts, setPosts] = useState(POSTS);
   const [userData, setUserData] = useState(USER_DATA);
+
+  // // postData
+  // useEffect(() => {
+  //   if (route.params) {
+  //     setPosts((prevState) => [...prevState, route.params]);
+  //   }
+  // }, [route.params]);
+  // console.log("posts", posts);
 
   // width screen
   useEffect(() => {

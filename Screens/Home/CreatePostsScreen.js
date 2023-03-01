@@ -31,7 +31,7 @@ const initialState = {
   image: "",
 };
 
-export const CreatePostsScreen = () => {
+export const CreatePostsScreen = ({ navigation }) => {
   // camera
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
@@ -125,8 +125,9 @@ export const CreatePostsScreen = () => {
 
   const formSubmit = () => {
     setImage(null);
+    navigation.navigate("Публикации", { state });
     setState(initialState);
-    console.log(state);
+    // console.log(state);
   };
 
   const clearForm = () => {
