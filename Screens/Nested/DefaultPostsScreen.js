@@ -52,6 +52,8 @@ export const DefaultPostsScreen = ({ navigation, route }) => {
   const [posts, setPosts] = useState([]);
   const [userData, setUserData] = useState(USER_DATA);
 
+  // console.log(posts);
+
   // postData
   useEffect(() => {
     if (route.params) {
@@ -129,7 +131,7 @@ export const DefaultPostsScreen = ({ navigation, route }) => {
                 <TouchableOpacity
                   activeOpacity={0.8}
                   style={styles.commentWrapper}
-                  onPress={() => navigation.navigate("Comments")}
+                  onPress={() => navigation.navigate("Comments", { item })}
                 >
                   <FontAwesome name="comment-o" size={24} color="#BDBDBD" />
                   <Text style={styles.commentCount}>0</Text>

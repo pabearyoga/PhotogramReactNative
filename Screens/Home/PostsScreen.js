@@ -53,9 +53,6 @@ export const PostsScreen = () => {
               />
             </TouchableOpacity>
           ),
-          tabBarStyle: {
-            display: "none",
-          },
         })}
         name="Comments"
         component={CommentsScreen}

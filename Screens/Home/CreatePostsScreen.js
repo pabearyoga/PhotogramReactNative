@@ -40,6 +40,7 @@ export const CreatePostsScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
+  const [photo, setPhoto] = useState(false);
 
   // load img
   const [image, setImage] = useState(null);
@@ -74,6 +75,11 @@ export const CreatePostsScreen = ({ navigation }) => {
   const bottomTitleImg = (image) => {
     return image ? "Редактировать фото" : "Загрузите фото";
   };
+
+  // console.log(state.image);
+  // const bottomTitleImgLoad = (stateImage) => {
+  //   return stateImage ? bottomTitleImg(image) : "Loading ...";
+  // };
 
   //camera
   useEffect(() => {
@@ -150,7 +156,8 @@ export const CreatePostsScreen = ({ navigation }) => {
   };
 
   // btnSubmitDisabled
-  const isFormValid = state.name && state.location && image;
+  const isFormValid =
+    state.name && state.location && state.image && state.location;
 
   const btnSubmitDisabled = (isFormValid) => {
     return isFormValid
@@ -162,6 +169,35 @@ export const CreatePostsScreen = ({ navigation }) => {
     return isFormValid
       ? { ...styles.btnTitle, color: "#BDBDBD" }
       : styles.btnTitle;
+  };
+
+  const takePhoto = async () => {
+    if (cameraRef && !image) {
+      const { uri } = await cameraRef.takePictureAsync();
+      setImage(uri);
+      const location = await Location.getCurrentPositionAsync();
+      setState((prevState) => ({
+        ...prevState,
+        image: uri,
+        locationCoords: location,
+      }));
+      await MediaLibrary.createAssetAsync(uri);
+    }
+
+    // image && setImage(null);
+    if (image) {
+      setImage(null);
+      setState((prevState) => ({
+        ...prevState,
+        image: "",
+      }));
+    }
+  };
+
+  const imgLoad = (statImg) => {
+    return statImg.image
+      ? image
+      : "https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921";
   };
 
   return (
@@ -186,7 +222,7 @@ export const CreatePostsScreen = ({ navigation }) => {
             >
               {image && (
                 <Image
-                  source={{ uri: image }}
+                  source={{ uri: imgLoad(state) }}
                   style={{ ...styles.img, width: dimensions }}
                 />
               )}
@@ -213,23 +249,7 @@ export const CreatePostsScreen = ({ navigation }) => {
                 <TouchableOpacity
                   style={imgBtnStyle(image)}
                   title="Pick an image from camera roll"
-                  onPress={async () => {
-                    if (cameraRef && !image) {
-                      const { uri } = await cameraRef.takePictureAsync();
-                      setImage(uri);
-                      const location = await Location.getCurrentPositionAsync();
-                      setState((prevState) => ({
-                        ...prevState,
-                        image: uri,
-                        locationCoords: location,
-                      }));
-                      await MediaLibrary.createAssetAsync(uri);
-                    }
-
-                    {
-                      image && setImage(null);
-                    }
-                  }}
+                  onPress={takePhoto}
                 >
                   <FontAwesome
                     name="camera"
