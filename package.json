@@ -24,6 +24,7 @@
     "expo-media-library": "~15.0.0",
     "expo-splash-screen": "^0.17.5",
     "expo-status-bar": "~1.4.2",
+    "firebase": "^9.17.2",
     "install": "^0.13.0",
     "moment": "^2.29.4",
     "react": "18.1.0",
