@@ -216,7 +216,7 @@ export default function RegistrationScreen({ navigation }) {
                     onChangeText={(value) =>
                       setState((prevState) => ({
                         ...prevState,
-                        email: value,
+                        email: value.toLowerCase(),
                       }))
                     }
                   />
