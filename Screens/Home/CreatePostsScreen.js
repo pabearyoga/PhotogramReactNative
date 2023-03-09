@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -11,7 +11,7 @@ import {
   TextInput,
   Keyboard,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
+
 import {
   FontAwesome,
   SimpleLineIcons,
@@ -21,15 +21,30 @@ import {
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
+//camera
+import { Camera } from "expo-camera";
+import * as MediaLibrary from "expo-media-library";
+
+//location
+import * as Location from "expo-location";
+
 const initialState = {
   name: "",
+  locationCoords: "",
   location: "",
   image: "",
 };
 
-export const CreatePostsScreen = () => {
+export const CreatePostsScreen = ({ navigation }) => {
+  // camera
+  const [hasPermission, setHasPermission] = useState(null);
+  const [cameraRef, setCameraRef] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [photo, setPhoto] = useState(false);
+
   // load img
   const [image, setImage] = useState(null);
+
   // input
   const [state, setState] = useState(initialState);
   const [nameFocus, setNameFocus] = useState(false);
@@ -42,6 +57,7 @@ export const CreatePostsScreen = () => {
   const [dimensionsHeigth, setDimensionsHeigth] = useState(
     Dimensions.get("window").height
   );
+
   // keyboard
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
@@ -60,23 +76,20 @@ export const CreatePostsScreen = () => {
     return image ? "Редактировать фото" : "Загрузите фото";
   };
 
-  // img load
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+  // console.log(state.image);
+  // const bottomTitleImgLoad = (stateImage) => {
+  //   return stateImage ? bottomTitleImg(image) : "Loading ...";
+  // };
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      setState((prevState) => ({
-        ...prevState,
-        image: result.assets[0].uri,
-      }));
-    }
-  };
+  //camera
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      await MediaLibrary.requestPermissionsAsync();
+
+      setHasPermission(status === "granted");
+    })();
+  }, []);
 
   // width screen
   useEffect(() => {
@@ -90,6 +103,16 @@ export const CreatePostsScreen = () => {
     const subscription = Dimensions.addEventListener("change", onChange);
     return () => subscription.remove();
   });
+
+  //location
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+      }
+    })();
+  }, []);
 
   //font
   SplashScreen.preventAutoHideAsync();
@@ -122,8 +145,9 @@ export const CreatePostsScreen = () => {
 
   const formSubmit = () => {
     setImage(null);
+    navigation.navigate("Публикации", { state });
     setState(initialState);
-    console.log(state);
+    // console.log(state);
   };
 
   const clearForm = () => {
@@ -132,7 +156,8 @@ export const CreatePostsScreen = () => {
   };
 
   // btnSubmitDisabled
-  const isFormValid = state.name && state.location && image;
+  const isFormValid =
+    state.name && state.location && state.image && state.location;
 
   const btnSubmitDisabled = (isFormValid) => {
     return isFormValid
@@ -144,6 +169,35 @@ export const CreatePostsScreen = () => {
     return isFormValid
       ? { ...styles.btnTitle, color: "#BDBDBD" }
       : styles.btnTitle;
+  };
+
+  const takePhoto = async () => {
+    if (cameraRef && !image) {
+      const { uri } = await cameraRef.takePictureAsync();
+      setImage(uri);
+      const location = await Location.getCurrentPositionAsync();
+      setState((prevState) => ({
+        ...prevState,
+        image: uri,
+        locationCoords: location,
+      }));
+      await MediaLibrary.createAssetAsync(uri);
+    }
+
+    // image && setImage(null);
+    if (image) {
+      setImage(null);
+      setState((prevState) => ({
+        ...prevState,
+        image: "",
+      }));
+    }
+  };
+
+  const imgLoad = (statImg) => {
+    return statImg.image
+      ? image
+      : "https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921";
   };
 
   return (
@@ -158,18 +212,44 @@ export const CreatePostsScreen = () => {
               width: dimensions,
             }}
           >
-            <View style={styles.imgWrapper}>
+            {/* Camera */}
+            <Camera
+              style={styles.camera}
+              type={type}
+              ref={(ref) => {
+                setCameraRef(ref);
+              }}
+            >
               {image && (
                 <Image
-                  source={{ uri: image }}
+                  source={{ uri: imgLoad(state) }}
                   style={{ ...styles.img, width: dimensions }}
                 />
               )}
-              <View style={styles.addImgBtnWrapper}>
+              <View style={styles.photoView}>
+                {!image && (
+                  <TouchableOpacity
+                    style={styles.flipContainer}
+                    onPress={() => {
+                      setType(
+                        type === Camera.Constants.Type.back
+                          ? Camera.Constants.Type.front
+                          : Camera.Constants.Type.back
+                      );
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name="camera-flip-outline"
+                      size={24}
+                      color="white"
+                    />
+                  </TouchableOpacity>
+                )}
+
                 <TouchableOpacity
                   style={imgBtnStyle(image)}
                   title="Pick an image from camera roll"
-                  onPress={pickImage}
+                  onPress={takePhoto}
                 >
                   <FontAwesome
                     name="camera"
@@ -178,8 +258,10 @@ export const CreatePostsScreen = () => {
                   />
                 </TouchableOpacity>
               </View>
-            </View>
+            </Camera>
+            {/* Camera */}
             <Text style={styles.bottomTitleImg}>{bottomTitleImg(image)}</Text>
+            {/* Form */}
             <View style={styles.formWrapper}>
               <View>
                 <TextInput
@@ -240,6 +322,8 @@ export const CreatePostsScreen = () => {
                 <Text style={btnTitleDisabled(!isFormValid)}>Опубликовать</Text>
               </TouchableOpacity>
             </View>
+            {/* Form */}
+            {/* Reset */}
             <View
               style={{
                 justifyContent: "center",
@@ -259,6 +343,7 @@ export const CreatePostsScreen = () => {
                 />
               </TouchableOpacity>
             </View>
+            {/* Reset */}
           </View>
         </KeyboardAvoidingView>
       </View>
@@ -272,25 +357,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
   },
-  imgWrapper: {
-    alignItems: "center",
-    backgroundColor: "#F6F6F6",
-    height: 240,
-    borderWidth: 1,
-    borderRadius: 8,
-    borderColor: "#E8E8E8",
-    marginTop: 32,
-  },
   img: { resizeMode: "cover", height: 240, borderRadius: 8 },
-  addImgBtnWrapper: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   addImgBtn: {
     width: 60,
     height: 60,
@@ -351,4 +418,25 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 50,
   },
+  camera: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F6F6F6",
+    height: 240,
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: "#E8E8E8",
+    marginTop: 32,
+    overflow: "hidden",
+  },
+  photoView: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  flipContainer: { position: "absolute", bottom: 10 },
 });
