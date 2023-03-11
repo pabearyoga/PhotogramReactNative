@@ -15,7 +15,7 @@ export const authSignUpUser =
         email,
         password
       );
-      console.log("user", user);
+      //   console.log("user", user);
     } catch (error) {
       console.log("error", error);
       console.log("error.message", error.message);
@@ -26,7 +26,7 @@ export const authSignInUser =
   async (dispatch, getSatte) => {
     try {
       const user = await signInWithEmailAndPassword(getAuth(), email, password);
-      console.log("user", user);
+      //   console.log("user", user);
     } catch (error) {
       console.log("error", error);
       console.log("error.message", error.message);

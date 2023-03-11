@@ -21,7 +21,6 @@ import * as ImagePicker from "expo-image-picker";
 import { AntDesign, Feather } from "@expo/vector-icons";
 
 import { useDispatch } from "react-redux";
-
 import { authSignUpUser } from "../../redux/auth/authOperation";
 
 const initialState = {
