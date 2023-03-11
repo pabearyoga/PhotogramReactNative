@@ -20,6 +20,10 @@ import * as ImagePicker from "expo-image-picker";
 
 import { AntDesign, Feather } from "@expo/vector-icons";
 
+import { useDispatch } from "react-redux";
+
+import { authSignUpUser } from "../../redux/auth/authOperation";
+
 const initialState = {
   login: "",
   email: "",
@@ -43,6 +47,8 @@ export default function RegistrationScreen({ navigation }) {
   const [emailFocus, setEmailFocus] = useState(false);
   const [loginFocus, setLoginFocus] = useState(false);
   const [passwordFocus, setPasswordFocus] = useState(false);
+
+  const dispatch = useDispatch();
 
   const focusInputStyle = (focus) => {
     return focus ? { ...styles.input, ...styles.inputFocus } : styles.input;
@@ -68,7 +74,8 @@ export default function RegistrationScreen({ navigation }) {
   const formSubmit = () => {
     setState(initialState);
     setIsSecurePassword(true);
-    console.log(state);
+    // console.log(state);
+    dispatch(authSignUpUser(state));
   };
 
   const passwordShown = () => {
