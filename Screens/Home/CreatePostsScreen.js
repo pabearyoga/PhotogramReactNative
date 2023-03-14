@@ -28,6 +28,9 @@ import * as MediaLibrary from "expo-media-library";
 //location
 import * as Location from "expo-location";
 
+//storage
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 const initialState = {
   name: "",
   locationCoords: "",
@@ -40,10 +43,10 @@ export const CreatePostsScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
-  const [photo, setPhoto] = useState(false);
 
   // load img
   const [image, setImage] = useState(null);
+  const [photoUrl, setPhotoUrl] = useState(null);
 
   // input
   const [state, setState] = useState(initialState);
@@ -75,11 +78,6 @@ export const CreatePostsScreen = ({ navigation }) => {
   const bottomTitleImg = (image) => {
     return image ? "Редактировать фото" : "Загрузите фото";
   };
-
-  // console.log(state.image);
-  // const bottomTitleImgLoad = (stateImage) => {
-  //   return stateImage ? bottomTitleImg(image) : "Loading ...";
-  // };
 
   //camera
   useEffect(() => {
@@ -143,18 +141,6 @@ export const CreatePostsScreen = ({ navigation }) => {
     return focus ? { ...styles.input, ...styles.inputFocus } : styles.input;
   };
 
-  const formSubmit = () => {
-    setImage(null);
-    navigation.navigate("Публикации", { state });
-    setState(initialState);
-    // console.log(state);
-  };
-
-  const clearForm = () => {
-    setImage(null);
-    setState(initialState);
-  };
-
   // btnSubmitDisabled
   const isFormValid =
     state.name && state.location && state.image && state.location;
@@ -171,6 +157,7 @@ export const CreatePostsScreen = ({ navigation }) => {
       : styles.btnTitle;
   };
 
+  // takePhoto
   const takePhoto = async () => {
     if (cameraRef && !image) {
       const { uri } = await cameraRef.takePictureAsync();
@@ -198,6 +185,52 @@ export const CreatePostsScreen = ({ navigation }) => {
     return statImg.image
       ? image
       : "https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921";
+  };
+
+  //send form
+  const formSubmit = () => {
+    uploadPhotoToServer();
+    // console.log(photoUrl);
+    // setState((prevState) => ({
+    //   ...prevState,
+    //   // image: photoUrl,
+    //   image: "",
+    // }));
+    // setPhotoUrl(null);
+    // setImage(null);
+    navigation.navigate("Публикации", { state });
+    console.log(state);
+    setState(initialState);
+  };
+
+  // storage
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(image);
+    const file = await response.blob();
+
+    const uniquePostId = Date.now().toString();
+
+    const storage = getStorage();
+    const storageRef = ref(storage, `images/${uniquePostId}`);
+
+    await uploadBytes(storageRef, file);
+
+    const processedPhoto = await getDownloadURL(
+      ref(storage, `images/${uniquePostId}`)
+    );
+
+    setPhotoUrl(processedPhoto);
+    setState((prevState) => ({
+      ...prevState,
+      // image: photoUrl,
+      image: "",
+    }));
+  };
+
+  // clear form
+  const clearForm = () => {
+    setImage(null);
+    setState(initialState);
   };
 
   return (
