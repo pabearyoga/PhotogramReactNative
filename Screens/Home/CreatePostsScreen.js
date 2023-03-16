@@ -49,6 +49,7 @@ export const CreatePostsScreen = ({ navigation }) => {
 
   // load img
   const [image, setImage] = useState(null);
+  const [loaderDisabled, setLoaderDisabled] = useState(false);
 
   // input
   const [state, setState] = useState(initialState);
@@ -164,6 +165,7 @@ export const CreatePostsScreen = ({ navigation }) => {
   // takePhoto
   const takePhoto = async () => {
     if (cameraRef && !image) {
+      setLoaderDisabled(true);
       const { uri } = await cameraRef.takePictureAsync();
       setImage(uri);
       const location = await Location.getCurrentPositionAsync();
@@ -172,7 +174,7 @@ export const CreatePostsScreen = ({ navigation }) => {
         image: uri,
         locationCoords: location,
       }));
-      // await MediaLibrary.createAssetAsync(uri);
+      setLoaderDisabled(false);
     }
 
     // image && setImage(null);
@@ -190,6 +192,10 @@ export const CreatePostsScreen = ({ navigation }) => {
       ? statImg.image
       : "https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921";
   };
+
+  // const takePhotoDisabled = () => {
+  //   return image ? false : true;
+  // };
 
   //send form
   const formSubmit = () => {
@@ -284,11 +290,11 @@ export const CreatePostsScreen = ({ navigation }) => {
                     />
                   </TouchableOpacity>
                 )}
-
                 <TouchableOpacity
                   style={imgBtnStyle(image)}
                   title="Pick an image from camera roll"
                   onPress={takePhoto}
+                  disabled={loaderDisabled}
                 >
                   <FontAwesome
                     name="camera"
