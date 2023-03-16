@@ -1,6 +1,5 @@
 import { initializeApp } from "firebase/app";
-// import { getStorage } from "firebase/storage";
-// import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAr7lE4bByl8EaK0Bji-l6eAzh_575-Z9c",
@@ -14,7 +13,17 @@ const firebaseConfig = {
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
-// export const auth = getAuth(app);
-// console.log(auth);
+export const db = getFirestore(app);
 
-// export default app;
+// const db = firebase.firestore();
+
+// export const addDataToFirestore = async (collectionName, data) => {
+//   try {
+//     const docRef = await db.collection(collectionName).add(data);
+//     console.log("Document written with ID: ", docRef.id);
+//     return docRef.id;
+//   } catch (error) {
+//     console.error("Error adding document: ", error);
+//     return null;
+//   }
+// };

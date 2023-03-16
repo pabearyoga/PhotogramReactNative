@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useSelector } from "react-redux";
 import {
   View,
   StyleSheet,
@@ -30,6 +31,8 @@ import * as Location from "expo-location";
 
 //storage
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../firebase/config";
 
 const initialState = {
   name: "",
@@ -46,7 +49,6 @@ export const CreatePostsScreen = ({ navigation }) => {
 
   // load img
   const [image, setImage] = useState(null);
-  const [photoUrl, setPhotoUrl] = useState(null);
 
   // input
   const [state, setState] = useState(initialState);
@@ -63,6 +65,8 @@ export const CreatePostsScreen = ({ navigation }) => {
 
   // keyboard
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
+  const { userId, nickName } = useSelector((stateRedux) => stateRedux.auth);
 
   //img
   const imgBtnStyle = (image) => {
@@ -168,7 +172,7 @@ export const CreatePostsScreen = ({ navigation }) => {
         image: uri,
         locationCoords: location,
       }));
-      await MediaLibrary.createAssetAsync(uri);
+      // await MediaLibrary.createAssetAsync(uri);
     }
 
     // image && setImage(null);
@@ -183,27 +187,34 @@ export const CreatePostsScreen = ({ navigation }) => {
 
   const imgLoad = (statImg) => {
     return statImg.image
-      ? image
+      ? statImg.image
       : "https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921";
   };
 
   //send form
   const formSubmit = () => {
-    uploadPhotoToServer();
-    // console.log(photoUrl);
-    // setState((prevState) => ({
-    //   ...prevState,
-    //   // image: photoUrl,
-    //   image: "",
-    // }));
-    // setPhotoUrl(null);
-    // setImage(null);
+    uploadPostToServer();
+
+    setTimeout(() => {
+      setImage(null);
+      setState(initialState);
+    }, 500);
+
     navigation.navigate("Публикации", { state });
-    console.log(state);
-    setState(initialState);
   };
 
   // storage
+  const uploadPostToServer = async () => {
+    const photo = await uploadPhotoToServer();
+
+    const createPost = await setDoc(doc(db, "posts", state.name), {
+      ...state,
+      image: photo,
+      userId: userId,
+      nickName: nickName,
+    });
+  };
+
   const uploadPhotoToServer = async () => {
     const response = await fetch(image);
     const file = await response.blob();
@@ -219,12 +230,7 @@ export const CreatePostsScreen = ({ navigation }) => {
       ref(storage, `images/${uniquePostId}`)
     );
 
-    setPhotoUrl(processedPhoto);
-    setState((prevState) => ({
-      ...prevState,
-      // image: photoUrl,
-      image: "",
-    }));
+    return processedPhoto;
   };
 
   // clear form
