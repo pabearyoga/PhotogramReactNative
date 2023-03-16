@@ -193,10 +193,6 @@ export const CreatePostsScreen = ({ navigation }) => {
       : "https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921";
   };
 
-  // const takePhotoDisabled = () => {
-  //   return image ? false : true;
-  // };
-
   //send form
   const formSubmit = () => {
     uploadPostToServer();
