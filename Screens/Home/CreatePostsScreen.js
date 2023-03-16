@@ -33,7 +33,7 @@ import * as Location from "expo-location";
 
 //storage
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { doc, setDoc, addDoc, collection } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import { db } from "../../firebase/config";
 
 const initialState = {
