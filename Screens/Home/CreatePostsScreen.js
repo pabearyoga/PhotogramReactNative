@@ -13,12 +13,14 @@ import {
   Keyboard,
 } from "react-native";
 
+//icons
 import {
   FontAwesome,
   SimpleLineIcons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 
+//font
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
@@ -31,7 +33,7 @@ import * as Location from "expo-location";
 
 //storage
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, addDoc, collection } from "firebase/firestore";
 import { db } from "../../firebase/config";
 
 const initialState = {
@@ -209,7 +211,7 @@ export const CreatePostsScreen = ({ navigation }) => {
   const uploadPostToServer = async () => {
     const photo = await uploadPhotoToServer();
 
-    const createPost = await setDoc(doc(db, "posts", state.name), {
+    const createPost = await addDoc(collection(db, "posts"), {
       ...state,
       image: photo,
       userId: userId,
