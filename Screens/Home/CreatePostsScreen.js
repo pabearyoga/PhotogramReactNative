@@ -204,7 +204,7 @@ export const CreatePostsScreen = ({ navigation }) => {
       setState(initialState);
     }, 500);
 
-    navigation.navigate("Публикации", { state });
+    navigation.navigate("Публикации");
   };
 
   // storage

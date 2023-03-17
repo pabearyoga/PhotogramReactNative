@@ -8,12 +8,15 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
-  ListHeaderComponent,
 } from "react-native";
+//font
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-
+//icons
 import { FontAwesome, SimpleLineIcons } from "@expo/vector-icons";
+//firestore
+import { db } from "../../firebase/config";
+import { collection, getDocs, onSnapshot, doc } from "firebase/firestore";
 
 const POSTS = [
   {
@@ -52,14 +55,20 @@ export const DefaultPostsScreen = ({ navigation, route }) => {
   const [posts, setPosts] = useState([]);
   const [userData, setUserData] = useState(USER_DATA);
 
-  // console.log(posts);
+  // getAllPost
+  const getAllPost = async () => {
+    const myCollectionRef = await collection(db, "posts");
 
-  // postData
+    onSnapshot(myCollectionRef, (querySnapshot) => {
+      setPosts(
+        querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+      );
+    });
+  };
+
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params.state]);
-    }
-  }, [route.params]);
+    getAllPost();
+  }, []);
 
   // width screen
   useEffect(() => {
