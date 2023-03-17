@@ -16,31 +16,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { FontAwesome, SimpleLineIcons } from "@expo/vector-icons";
 //firestore
 import { db } from "../../firebase/config";
-import { collection, getDocs, onSnapshot, doc } from "firebase/firestore";
-
-const POSTS = [
-  {
-    id: "123",
-    name: "Лес",
-    location: "Ivano-Frankivs'k Region, Ukraine",
-    image:
-      "https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80",
-  },
-  {
-    id: "1234",
-    name: "Море",
-    location: "Kherson Region, Ukraine",
-    image:
-      "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=652&q=80",
-  },
-  {
-    id: "1235",
-    name: "Гори",
-    location: "Ivano-Frankivs'k Region, Ukraine",
-    image:
-      "https://images.unsplash.com/photo-1602130707301-2f09f9d68179?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80",
-  },
-];
+import { collection, onSnapshot } from "firebase/firestore";
 
 const USER_DATA = {
   login: "Natali Romanova",
