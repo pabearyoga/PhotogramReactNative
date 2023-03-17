@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,8 +8,6 @@ import {
   TouchableOpacity,
   SafeAreaView,
   FlatList,
-  TouchableWithoutFeedback,
-  KeyboardAvoidingView,
   Keyboard,
 } from "react-native";
 
@@ -20,24 +18,40 @@ import * as SplashScreen from "expo-splash-screen";
 
 import { Ionicons } from "@expo/vector-icons";
 
+// import { useSelector } from "react-redux";
+import { db } from "../../firebase/config";
+import { collection, addDoc, onSnapshot } from "firebase/firestore";
+
 export const CommentsScreen = ({ route }) => {
-  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const postId = route.params.item.id;
 
   const image = route.params.item.image;
+
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
-  const commentSubmit = () => {
-    if (comment) {
-      setComments((prevState) => [
-        ...prevState,
-        {
-          comment: comment.value,
-          date: moment().format("Do MMMM, YYYY | h:mm"),
-        },
-      ]);
-    }
+  useEffect(() => {
+    getAllPosts();
+  }, []);
+
+  const createPost = async () => {
+    const commentsRef = collection(db, "posts", postId, "comments");
+    await addDoc(commentsRef, {
+      comment: comment.value,
+      date: moment().format("Do MMMM, YYYY | h:mm"),
+    });
     setComment("");
+  };
+
+  const getAllPosts = async () => {
+    const commentsRef = collection(db, "posts", postId, "comments");
+
+    onSnapshot(commentsRef, (querySnapshot) => {
+      setComments(
+        querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+      );
+    });
   };
 
   const keyboardHide = () => {
@@ -106,7 +120,7 @@ export const CommentsScreen = ({ route }) => {
               </View>
             </View>
           )}
-          keyExtractor={(item, indx) => indx.toString()}
+          keyExtractor={(item) => item.id}
         />
       </View>
       <View
@@ -136,7 +150,8 @@ export const CommentsScreen = ({ route }) => {
         <TouchableOpacity
           activeOpacity={0.8}
           style={styles.sendComment}
-          onPress={commentSubmit}
+          // onPress={commentSubmit}
+          onPress={createPost}
         >
           <Ionicons name="arrow-up-outline" size={24} color="#fff" />
         </TouchableOpacity>
