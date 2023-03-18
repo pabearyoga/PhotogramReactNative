@@ -23,6 +23,8 @@ import { AntDesign, Feather } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { authSignUpUser } from "../../redux/auth/authOperation";
 
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 const initialState = {
   login: "",
   email: "",
@@ -70,13 +72,6 @@ export default function RegistrationScreen({ navigation }) {
     Keyboard.dismiss();
   };
 
-  const formSubmit = () => {
-    setState(initialState);
-    setIsSecurePassword(true);
-    // console.log(state);
-    dispatch(authSignUpUser(state));
-  };
-
   const passwordShown = () => {
     isSecurePassword === true
       ? setIsSecurePassword(false)
@@ -114,12 +109,9 @@ export default function RegistrationScreen({ navigation }) {
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
-      setState((prevState) => ({
-        ...prevState,
-        image: result.assets[0].uri,
-      }));
     }
   };
+
   const addImg = () => {
     return (
       <TouchableOpacity
@@ -148,6 +140,30 @@ export default function RegistrationScreen({ navigation }) {
 
   const imgAddBtn = (image) => {
     return image ? delleteImg() : addImg();
+  };
+
+  const formSubmit = async () => {
+    const photo = await uploadPhotoToServer();
+    dispatch(authSignUpUser({ ...state, image: photo }));
+  };
+
+  // storage;
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(image);
+    const file = await response.blob();
+
+    const uniquePostId = Date.now().toString();
+
+    const storage = getStorage();
+    const storageRef = ref(storage, `avatar/${uniquePostId}`);
+
+    await uploadBytes(storageRef, file);
+
+    const processedPhoto = await getDownloadURL(
+      ref(storage, `avatar/${uniquePostId}`)
+    );
+
+    return processedPhoto;
   };
 
   return (

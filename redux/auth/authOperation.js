@@ -11,7 +11,12 @@ import {
 import { authSlice } from "./authReducer";
 
 export const authSignUpUser =
-  ({ login, email, password }) =>
+  ({
+    login,
+    email,
+    password,
+    image = "https://img.myloview.com/stickers/default-avatar-profile-icon-vector-social-media-user-image-700-205124837.jpg",
+  }) =>
   async (dispatch, getSatte) => {
     // console.log("login, email, password", login, email, password);
     try {
@@ -21,13 +26,15 @@ export const authSignUpUser =
 
       await updateProfile(user, {
         displayName: login,
+        photoURL: image,
       });
 
-      const { displayName, uid } = await getAuth().currentUser;
+      const { displayName, uid, photoURL } = await getAuth().currentUser;
 
       const userUpdateProfile = {
         userId: uid,
         nickName: displayName,
+        userAvatar: photoURL,
       };
 
       dispatch(authSlice.actions.updateUserProfile(userUpdateProfile));
@@ -37,6 +44,7 @@ export const authSignUpUser =
       console.log("error.message", error.message);
     }
   };
+
 export const authSignInUser =
   ({ email, password }) =>
   async (dispatch, getSatte) => {
@@ -61,6 +69,7 @@ export const authStateCahngeUser = () => async (dispatch, getState) => {
       const userUpdateProfile = {
         userId: user.uid,
         nickName: user.displayName,
+        userAvatar: user.photoURL,
       };
 
       const stateChange = {
