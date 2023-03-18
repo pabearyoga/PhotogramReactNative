@@ -143,7 +143,9 @@ export default function RegistrationScreen({ navigation }) {
   };
 
   const formSubmit = async () => {
-    const photo = await uploadPhotoToServer();
+    const photo = image
+      ? await uploadPhotoToServer()
+      : "https://img.myloview.com/stickers/default-avatar-profile-icon-vector-social-media-user-image-700-205124837.jpg";
     dispatch(authSignUpUser({ ...state, image: photo }));
   };
 
