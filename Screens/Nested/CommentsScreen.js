@@ -1,4 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
+import { useSelector } from "react-redux";
+
 import {
   View,
   Text,
@@ -24,12 +26,13 @@ import { collection, addDoc, onSnapshot } from "firebase/firestore";
 
 export const CommentsScreen = ({ route }) => {
   const postId = route.params.item.id;
-
   const image = route.params.item.image;
 
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
+  const { userAvatar } = useSelector((stateRedux) => stateRedux.auth);
 
   useEffect(() => {
     getAllPosts();
@@ -40,6 +43,7 @@ export const CommentsScreen = ({ route }) => {
     await addDoc(commentsRef, {
       comment: comment.value,
       date: moment().format("Do MMMM, YYYY | h:mm"),
+      userAvatar: userAvatar,
     });
     setComment("");
   };
@@ -115,7 +119,7 @@ export const CommentsScreen = ({ route }) => {
               <View>
                 <Image
                   style={{ borderRadius: 100, width: 28, height: 28 }}
-                  source={require("../../assets/images/Rectangle_22.png")}
+                  source={{ uri: item.userAvatar }}
                 />
               </View>
             </View>
