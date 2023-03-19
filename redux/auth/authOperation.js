@@ -11,17 +11,11 @@ import {
 import { authSlice } from "./authReducer";
 
 export const authSignUpUser =
-  ({
-    login,
-    email,
-    password,
-    image,
-    // image = "https://img.myloview.com/stickers/default-avatar-profile-icon-vector-social-media-user-image-700-205124837.jpg",
-  }) =>
+  ({ login, userEmail, password, image }) =>
   async (dispatch, getSatte) => {
     // console.log("login, email, password", login, email, password);
     try {
-      await createUserWithEmailAndPassword(getAuth(), email, password);
+      await createUserWithEmailAndPassword(getAuth(), userEmail, password);
 
       const user = await getAuth().currentUser;
 
@@ -30,12 +24,13 @@ export const authSignUpUser =
         photoURL: image,
       });
 
-      const { displayName, uid, photoURL } = await getAuth().currentUser;
+      const { displayName, uid, photoURL, email } = await getAuth().currentUser;
 
       const userUpdateProfile = {
         userId: uid,
         nickName: displayName,
         userAvatar: photoURL,
+        userEmail: email,
       };
 
       dispatch(authSlice.actions.updateUserProfile(userUpdateProfile));

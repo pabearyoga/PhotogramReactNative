@@ -27,7 +27,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const initialState = {
   login: "",
-  email: "",
+  userEmail: "",
   password: "",
   image: "",
 };
@@ -236,11 +236,11 @@ export default function RegistrationScreen({ navigation }) {
                     onBlur={() => {
                       setIsShowKeyboard(false), setEmailFocus(false);
                     }}
-                    value={state.email}
+                    value={state.userEmail}
                     onChangeText={(value) =>
                       setState((prevState) => ({
                         ...prevState,
-                        email: value.toLowerCase(),
+                        userEmail: value.toLowerCase(),
                       }))
                     }
                   />
