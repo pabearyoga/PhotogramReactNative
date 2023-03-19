@@ -66,6 +66,7 @@ export const authStateCahngeUser = () => async (dispatch, getState) => {
         userId: user.uid,
         nickName: user.displayName,
         userAvatar: user.photoURL,
+        userEmail: user.email,
       };
 
       const stateChange = {

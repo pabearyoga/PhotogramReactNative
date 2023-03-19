@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useSelector } from "react-redux";
 import {
   StyleSheet,
   Text,
@@ -18,18 +19,17 @@ import { FontAwesome, SimpleLineIcons } from "@expo/vector-icons";
 import { db } from "../../firebase/config";
 import { collection, onSnapshot } from "firebase/firestore";
 
-const USER_DATA = {
-  login: "Natali Romanova",
-  email: "email@example.com",
-  image: "../../assets/images/Photo_BG.png",
-};
-
 export const DefaultPostsScreen = ({ navigation, route }) => {
   const [dimensions, setDimensions] = useState(
     Dimensions.get("window").width - 16 * 2
   );
   const [posts, setPosts] = useState([]);
-  const [userData, setUserData] = useState(USER_DATA);
+
+  const { nickName, userAvatar, userEmail } = useSelector(
+    (stateRedux) => stateRedux.auth
+  );
+
+  console.log(userAvatar);
 
   // getAllPost
   const getAllPost = async () => {
@@ -84,13 +84,10 @@ export const DefaultPostsScreen = ({ navigation, route }) => {
           data={posts}
           ListHeaderComponent={
             <View style={styles.userInfoWrapper}>
-              <Image
-                style={styles.userImg}
-                source={require("../../assets/images/Rectangle_22.png")}
-              />
+              <Image style={styles.userImg} source={{ uri: userAvatar }} />
               <View style={styles.userTitle}>
-                <Text style={styles.loginTitle}>{userData.login}</Text>
-                <Text style={styles.emailTitle}>{userData.email}</Text>
+                <Text style={styles.loginTitle}>{nickName}</Text>
+                <Text style={styles.emailTitle}>{userEmail}</Text>
               </View>
             </View>
           }
