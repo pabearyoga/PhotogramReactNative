@@ -17,33 +17,54 @@ import * as SplashScreen from "expo-splash-screen";
 import { FontAwesome, SimpleLineIcons } from "@expo/vector-icons";
 //firestore
 import { db } from "../../firebase/config";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, getDocs } from "firebase/firestore";
 
 export const DefaultPostsScreen = ({ navigation, route }) => {
   const [dimensions, setDimensions] = useState(
     Dimensions.get("window").width - 16 * 2
   );
   const [posts, setPosts] = useState([]);
+  const [comments, setComments] = useState(null);
 
-  const { nickName, userAvatar, userEmail } = useSelector(
+  const { userId, nickName, userAvatar, userEmail } = useSelector(
     (stateRedux) => stateRedux.auth
   );
 
-  console.log(userAvatar);
+  const getAllPosts = async () => {
+    const postsRef = collection(db, "posts");
+    const postsSnapshot = await getDocs(postsRef);
+    const posts = postsSnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+      commentNumber: 0,
+    }));
 
-  // getAllPost
-  const getAllPost = async () => {
-    const myCollectionRef = await collection(db, "posts");
+    const unsubscribes = posts.map((post) =>
+      onSnapshot(
+        collection(db, "posts", post.id, "comments"),
+        (commentsSnapshot) => {
+          const commentNumber = commentsSnapshot.docs.length;
+          setPosts((prevPosts) =>
+            prevPosts.map((prevPost) =>
+              prevPost.id === post.id
+                ? { ...prevPost, commentNumber }
+                : prevPost
+            )
+          );
+        }
+      )
+    );
 
-    onSnapshot(myCollectionRef, (querySnapshot) => {
-      setPosts(
-        querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-      );
-    });
+    setPosts(posts);
+
+    return () => {
+      unsubscribes.forEach((unsubscribe) => unsubscribe());
+    };
   };
 
   useEffect(() => {
-    getAllPost();
+    const unsubscribe = getAllPosts();
+    return () => unsubscribe();
   }, []);
 
   // width screen
@@ -116,7 +137,7 @@ export const DefaultPostsScreen = ({ navigation, route }) => {
                   onPress={() => navigation.navigate("Comments", { item })}
                 >
                   <FontAwesome name="comment-o" size={24} color="#BDBDBD" />
-                  <Text style={styles.commentCount}>0</Text>
+                  <Text style={styles.commentCount}>{item.commentNumber}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   activeOpacity={0.8}
