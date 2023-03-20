@@ -103,11 +103,15 @@ export const DefaultPostsScreen = ({ navigation, route }) => {
     return null;
   }
 
+  const sortPosts = posts.sort(
+    (firstPost, secondPost) => firstPost.timeStamp - secondPost.timeStamp
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ width: dimensions }} onLayout={onLayoutRootView}>
         <FlatList
-          data={posts}
+          data={sortPosts}
           ListHeaderComponent={
             <View style={styles.userInfoWrapper}>
               <Image style={styles.userImg} source={{ uri: userAvatar }} />
