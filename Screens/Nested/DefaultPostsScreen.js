@@ -17,24 +17,19 @@ import * as SplashScreen from "expo-splash-screen";
 import { FontAwesome, SimpleLineIcons } from "@expo/vector-icons";
 //firestore
 import { db } from "../../firebase/config";
-import {
-  collection,
-  onSnapshot,
-  getDocs,
-  collectionGroup,
-} from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 
 export const DefaultPostsScreen = ({ navigation, route }) => {
   const [dimensions, setDimensions] = useState(
     Dimensions.get("window").width - 16 * 2
   );
   const [posts, setPosts] = useState([]);
-  const [comments, setComments] = useState(null);
 
-  const { userId, nickName, userAvatar, userEmail } = useSelector(
+  const { nickName, userAvatar, userEmail } = useSelector(
     (stateRedux) => stateRedux.auth
   );
 
+  //firebase
   const getAllPosts = () => {
     const postsRef = collection(db, "posts");
     const postsUnsubscribe = onSnapshot(postsRef, (querySnapshot) => {
@@ -77,7 +72,6 @@ export const DefaultPostsScreen = ({ navigation, route }) => {
     return () => unsubscribe();
   }, []);
 
-  console.log(posts);
   // width screen
   useEffect(() => {
     const onChange = () => {
