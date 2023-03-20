@@ -44,6 +44,7 @@ export const CommentsScreen = ({ route }) => {
       comment: comment.value,
       date: moment().format("Do MMMM, YYYY | h:mm"),
       userAvatar: userAvatar,
+      timeStamp: Date.now().toString(),
     });
     setComment("");
   };
@@ -81,6 +82,10 @@ export const CommentsScreen = ({ route }) => {
     return null;
   }
 
+  const sortPosts = comments.sort(
+    (firstPost, secondPost) => firstPost.timeStamp - secondPost.timeStamp
+  );
+
   return (
     <SafeAreaView style={styles.container} onPress={keyboardHide}>
       <View
@@ -89,7 +94,7 @@ export const CommentsScreen = ({ route }) => {
         // onPress={keyboardHide}
       >
         <FlatList
-          data={comments}
+          data={sortPosts}
           ListHeaderComponent={
             <View style={{ marginVertical: 32 }}>
               <Image style={{ ...styles.postImage }} source={{ uri: image }} />
