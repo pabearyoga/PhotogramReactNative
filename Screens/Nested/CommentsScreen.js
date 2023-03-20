@@ -47,6 +47,7 @@ export const CommentsScreen = ({ route }) => {
       timeStamp: Date.now().toString(),
     });
     setComment("");
+    keyboardHide();
   };
 
   const getAllPosts = async () => {
