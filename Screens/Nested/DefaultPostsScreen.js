@@ -17,7 +17,12 @@ import * as SplashScreen from "expo-splash-screen";
 import { FontAwesome, SimpleLineIcons } from "@expo/vector-icons";
 //firestore
 import { db } from "../../firebase/config";
-import { collection, onSnapshot, getDocs } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  getDocs,
+  collectionGroup,
+} from "firebase/firestore";
 
 export const DefaultPostsScreen = ({ navigation, route }) => {
   const [dimensions, setDimensions] = useState(
@@ -30,35 +35,40 @@ export const DefaultPostsScreen = ({ navigation, route }) => {
     (stateRedux) => stateRedux.auth
   );
 
-  const getAllPosts = async () => {
+  const getAllPosts = () => {
     const postsRef = collection(db, "posts");
-    const postsSnapshot = await getDocs(postsRef);
-    const posts = postsSnapshot.docs.map((doc) => ({
-      ...doc.data(),
-      id: doc.id,
-      commentNumber: 0,
-    }));
+    const postsUnsubscribe = onSnapshot(postsRef, (querySnapshot) => {
+      const updatedPosts = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+        commentNumber: 0,
+      }));
 
-    const unsubscribes = posts.map((post) =>
-      onSnapshot(
-        collection(db, "posts", post.id, "comments"),
-        (commentsSnapshot) => {
-          const commentNumber = commentsSnapshot.docs.length;
-          setPosts((prevPosts) =>
-            prevPosts.map((prevPost) =>
-              prevPost.id === post.id
-                ? { ...prevPost, commentNumber }
-                : prevPost
-            )
-          );
-        }
-      )
-    );
+      const commentUnsubscribes = updatedPosts.map((post) =>
+        onSnapshot(
+          collection(db, "posts", post.id, "comments"),
+          (commentsSnapshot) => {
+            const commentNumber = commentsSnapshot.docs.length;
+            setPosts((prevPosts) =>
+              prevPosts.map((prevPost) =>
+                prevPost.id === post.id
+                  ? { ...prevPost, commentNumber }
+                  : prevPost
+              )
+            );
+          }
+        )
+      );
 
-    setPosts(posts);
+      setPosts(updatedPosts);
+
+      return () => {
+        commentUnsubscribes.forEach((unsubscribe) => unsubscribe());
+      };
+    });
 
     return () => {
-      unsubscribes.forEach((unsubscribe) => unsubscribe());
+      postsUnsubscribe();
     };
   };
 
@@ -67,6 +77,7 @@ export const DefaultPostsScreen = ({ navigation, route }) => {
     return () => unsubscribe();
   }, []);
 
+  console.log(posts);
   // width screen
   useEffect(() => {
     const onChange = () => {
