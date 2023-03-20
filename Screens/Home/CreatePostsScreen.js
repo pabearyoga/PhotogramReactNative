@@ -216,6 +216,7 @@ export const CreatePostsScreen = ({ navigation }) => {
       image: photo,
       userId: userId,
       nickName: nickName,
+      timeStamp: Date.now().toString(),
     });
   };
 
