@@ -32,32 +32,8 @@ import { collection, onSnapshot } from "firebase/firestore";
 import { useDispatch } from "react-redux";
 import { authSignOutUser } from "../../redux/auth/authOperation";
 
-const POSTS = [
-  {
-    id: "123",
-    name: "Лес",
-    location: " Ukraine",
-    image:
-      "https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80",
-  },
-  {
-    id: "1234",
-    name: "Море",
-    location: " Ukraine",
-    image:
-      "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=652&q=80",
-  },
-  {
-    id: "1235",
-    name: "Гори",
-    location: " Ukraine",
-    image:
-      "https://images.unsplash.com/photo-1602130707301-2f09f9d68179?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80",
-  },
-];
-
 export const DefaultProfileScreen = ({ navigation, route }) => {
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState(userAvatar);
 
   const [dimensions, setDimensions] = useState(
     Dimensions.get("window").width - 16 * 2
@@ -68,6 +44,10 @@ export const DefaultProfileScreen = ({ navigation, route }) => {
   const { nickName, userAvatar, userId } = useSelector(
     (stateRedux) => stateRedux.auth
   );
+
+  useEffect(() => {
+    setImage(userAvatar);
+  }, []);
 
   //firebase
   const getUserPosts = () => {
@@ -154,10 +134,6 @@ export const DefaultProfileScreen = ({ navigation, route }) => {
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
-      // setState((prevState) => ({
-      //   ...prevState,
-      //   image: result.assets[0].uri,
-      // }));
     }
   };
   const addImg = () => {
