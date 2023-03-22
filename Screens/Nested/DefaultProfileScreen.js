@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useSelector } from "react-redux";
+
 import {
   StyleSheet,
   Text,
@@ -21,6 +23,14 @@ import {
   AntDesign,
   Feather,
 } from "@expo/vector-icons";
+
+//firestore
+import { db } from "../../firebase/config";
+import { collection, onSnapshot } from "firebase/firestore";
+
+// singOut
+import { useDispatch } from "react-redux";
+import { authSignOutUser } from "../../redux/auth/authOperation";
 
 const POSTS = [
   {
@@ -46,28 +56,61 @@ const POSTS = [
   },
 ];
 
-const USER_DATA = {
-  login: "Natali Romanova",
-  email: "email@example.com",
-  image: "../../assets/images/Photo_BG.png",
-};
-
 export const DefaultProfileScreen = ({ navigation, route }) => {
   const [image, setImage] = useState(null);
 
   const [dimensions, setDimensions] = useState(
     Dimensions.get("window").width - 16 * 2
   );
-  const [posts, setPosts] = useState(POSTS);
-  const [userData, setUserData] = useState(USER_DATA);
+  const [posts, setPosts] = useState([]);
+  const dispatch = useDispatch();
 
-  // // postData
-  // useEffect(() => {
-  //   if (route.params) {
-  //     setPosts((prevState) => [...prevState, route.params]);
-  //   }
-  // }, [route.params]);
-  // console.log("posts", posts);
+  const { nickName, userAvatar, userId } = useSelector(
+    (stateRedux) => stateRedux.auth
+  );
+
+  //firebase
+  const getUserPosts = () => {
+    const postsRef = collection(db, "posts");
+    const postsUnsubscribe = onSnapshot(postsRef, (querySnapshot) => {
+      const updatedPosts = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+        commentNumber: 0,
+      }));
+
+      const commentUnsubscribes = updatedPosts.map((post) =>
+        onSnapshot(
+          collection(db, "posts", post.id, "comments"),
+          (commentsSnapshot) => {
+            const commentNumber = commentsSnapshot.docs.length;
+            setPosts((prevPosts) =>
+              prevPosts.map((prevPost) =>
+                prevPost.id === post.id
+                  ? { ...prevPost, commentNumber }
+                  : prevPost
+              )
+            );
+          }
+        )
+      );
+
+      setPosts(updatedPosts);
+
+      return () => {
+        commentUnsubscribes.forEach((unsubscribe) => unsubscribe());
+      };
+    });
+
+    return () => {
+      postsUnsubscribe();
+    };
+  };
+
+  useEffect(() => {
+    const unsubscribe = getUserPosts();
+    return () => unsubscribe();
+  }, []);
 
   // width screen
   useEffect(() => {
@@ -147,6 +190,17 @@ export const DefaultProfileScreen = ({ navigation, route }) => {
     return image ? delleteImg() : addImg();
   };
 
+  //logout
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
+
+  const filterUserPost = posts
+    .filter((post) => post.userId === userId)
+    .sort(
+      (firstPost, secondPost) => firstPost.timeStamp - secondPost.timeStamp
+    );
+
   return (
     <TouchableWithoutFeedback
       style={styles.container}
@@ -160,33 +214,50 @@ export const DefaultProfileScreen = ({ navigation, route }) => {
           style={{
             ...styles.formWrapper,
             width: dimensions + 16 * 2,
+            paddingBottom: 185,
           }}
         >
-          {/* // userAvatar */}
           <View
             style={{
               width: dimensions,
               alignItems: "center",
             }}
           >
+            {/* // userAvatar */}
             <View style={styles.imgWrapper}>
               {image && <Image source={{ uri: image }} style={styles.img} />}
               <View style={styles.addImgBtnWrapper}>{imgAddBtn(image)}</View>
             </View>
-
             {/* // logout btn */}
-            <TouchableOpacity
-              style={styles.logoutBtn}
-              onPress={() => console.log("logout")}
-            >
+            <TouchableOpacity style={styles.logoutBtn} onPress={signOut}>
               <Feather name="log-out" size={24} color="#BDBDBD" />
             </TouchableOpacity>
-
             {/* //postList */}
             <FlatList
-              data={posts}
+              data={filterUserPost}
+              ListEmptyComponent={
+                <View style={{ height: 500, justifyContent: "space-between" }}>
+                  <Text
+                    style={{
+                      marginTop: 100,
+                      marginBottom: 10,
+                      fontFamily: "Roboto-Regular",
+                      fontSize: 16,
+                      color: "#FF6C00",
+                    }}
+                  >
+                    Sorry we can't find any post...
+                  </Text>
+                  <Image
+                    style={{ height: 200, width: 200 }}
+                    source={{
+                      uri: "https://i.gifer.com/origin/3f/3fcf565ccc553afcfd89858c97304705.gif",
+                    }}
+                  />
+                </View>
+              }
               ListHeaderComponent={
-                <Text style={styles.userName}>{userData.login}</Text>
+                <Text style={styles.userName}>{nickName}</Text>
               }
               renderItem={({ item }) => (
                 <View>
@@ -211,10 +282,14 @@ export const DefaultProfileScreen = ({ navigation, route }) => {
                       <TouchableOpacity
                         activeOpacity={0.8}
                         style={{ ...styles.commentWrapper, marginRight: 24 }}
-                        onPress={() => navigation.navigate("Comments")}
+                        onPress={() =>
+                          navigation.navigate("Comments", { item })
+                        }
                       >
                         <FontAwesome name="comment" size={24} color="#FF6C00" />
-                        <Text style={styles.commentCount}>0</Text>
+                        <Text style={styles.commentCount}>
+                          {item.commentNumber}
+                        </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
                         activeOpacity={0.8}
@@ -222,7 +297,9 @@ export const DefaultProfileScreen = ({ navigation, route }) => {
                         // onPress={() => navigation.navigate("Comments")}
                       >
                         <AntDesign name="like2" size={24} color="#FF6C00" />
-                        <Text style={styles.commentCount}>0</Text>
+                        <Text style={styles.commentCount}>
+                          {item.commentNumber + 100 - 36}
+                        </Text>
                       </TouchableOpacity>
                     </View>
                     <TouchableOpacity
