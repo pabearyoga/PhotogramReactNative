@@ -1,4 +1,6 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
+import { useSelector } from "react-redux";
+
 import {
   View,
   Text,
@@ -8,8 +10,6 @@ import {
   TouchableOpacity,
   SafeAreaView,
   FlatList,
-  TouchableWithoutFeedback,
-  KeyboardAvoidingView,
   Keyboard,
 } from "react-native";
 
@@ -20,24 +20,44 @@ import * as SplashScreen from "expo-splash-screen";
 
 import { Ionicons } from "@expo/vector-icons";
 
-export const CommentsScreen = ({ route }) => {
-  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+// import { useSelector } from "react-redux";
+import { db } from "../../firebase/config";
+import { collection, addDoc, onSnapshot } from "firebase/firestore";
 
+export const CommentsScreen = ({ route }) => {
+  const postId = route.params.item.id;
   const image = route.params.item.image;
+
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
-  const commentSubmit = () => {
-    if (comment) {
-      setComments((prevState) => [
-        ...prevState,
-        {
-          comment: comment.value,
-          date: moment().format("Do MMMM, YYYY | h:mm"),
-        },
-      ]);
-    }
+  const { userAvatar } = useSelector((stateRedux) => stateRedux.auth);
+
+  useEffect(() => {
+    getAllPosts();
+  }, []);
+
+  const createPost = async () => {
+    const commentsRef = collection(db, "posts", postId, "comments");
+    await addDoc(commentsRef, {
+      comment: comment.value,
+      date: moment().format("Do MMMM, YYYY | h:mm"),
+      userAvatar: userAvatar,
+      timeStamp: Date.now().toString(),
+    });
     setComment("");
+    keyboardHide();
+  };
+
+  const getAllPosts = async () => {
+    const commentsRef = collection(db, "posts", postId, "comments");
+
+    onSnapshot(commentsRef, (querySnapshot) => {
+      setComments(
+        querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+      );
+    });
   };
 
   const keyboardHide = () => {
@@ -63,6 +83,10 @@ export const CommentsScreen = ({ route }) => {
     return null;
   }
 
+  const sortPosts = comments.sort(
+    (firstPost, secondPost) => firstPost.timeStamp - secondPost.timeStamp
+  );
+
   return (
     <SafeAreaView style={styles.container} onPress={keyboardHide}>
       <View
@@ -71,7 +95,7 @@ export const CommentsScreen = ({ route }) => {
         // onPress={keyboardHide}
       >
         <FlatList
-          data={comments}
+          data={sortPosts}
           ListHeaderComponent={
             <View style={{ marginVertical: 32 }}>
               <Image style={{ ...styles.postImage }} source={{ uri: image }} />
@@ -101,12 +125,12 @@ export const CommentsScreen = ({ route }) => {
               <View>
                 <Image
                   style={{ borderRadius: 100, width: 28, height: 28 }}
-                  source={require("../../assets/images/Rectangle_22.png")}
+                  source={{ uri: item.userAvatar }}
                 />
               </View>
             </View>
           )}
-          keyExtractor={(item, indx) => indx.toString()}
+          keyExtractor={(item) => item.id}
         />
       </View>
       <View
@@ -136,7 +160,8 @@ export const CommentsScreen = ({ route }) => {
         <TouchableOpacity
           activeOpacity={0.8}
           style={styles.sendComment}
-          onPress={commentSubmit}
+          // onPress={commentSubmit}
+          onPress={createPost}
         >
           <Ionicons name="arrow-up-outline" size={24} color="#fff" />
         </TouchableOpacity>

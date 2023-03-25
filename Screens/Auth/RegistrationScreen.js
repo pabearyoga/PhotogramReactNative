@@ -20,9 +20,14 @@ import * as ImagePicker from "expo-image-picker";
 
 import { AntDesign, Feather } from "@expo/vector-icons";
 
+import { useDispatch } from "react-redux";
+import { authSignUpUser } from "../../redux/auth/authOperation";
+
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 const initialState = {
   login: "",
-  email: "",
+  userEmail: "",
   password: "",
   image: "",
 };
@@ -44,6 +49,8 @@ export default function RegistrationScreen({ navigation }) {
   const [loginFocus, setLoginFocus] = useState(false);
   const [passwordFocus, setPasswordFocus] = useState(false);
 
+  const dispatch = useDispatch();
+
   const focusInputStyle = (focus) => {
     return focus ? { ...styles.input, ...styles.inputFocus } : styles.input;
   };
@@ -63,12 +70,6 @@ export default function RegistrationScreen({ navigation }) {
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-  };
-
-  const formSubmit = () => {
-    setState(initialState);
-    setIsSecurePassword(true);
-    console.log(state);
   };
 
   const passwordShown = () => {
@@ -108,12 +109,9 @@ export default function RegistrationScreen({ navigation }) {
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
-      setState((prevState) => ({
-        ...prevState,
-        image: result.assets[0].uri,
-      }));
     }
   };
+
   const addImg = () => {
     return (
       <TouchableOpacity
@@ -142,6 +140,34 @@ export default function RegistrationScreen({ navigation }) {
 
   const imgAddBtn = (image) => {
     return image ? delleteImg() : addImg();
+  };
+
+  const formSubmit = async () => {
+    const photo = image
+      ? await uploadPhotoToServer()
+      : "https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg";
+    dispatch(authSignUpUser({ ...state, image: photo }));
+  };
+
+  // storage;
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(image);
+    // console.log("response:", response);
+    const file = await response.blob();
+    // console.log("file:", file);
+
+    const uniquePostId = Date.now().toString();
+
+    const storage = getStorage();
+    const storageRef = ref(storage, `avatar/${uniquePostId}`);
+
+    await uploadBytes(storageRef, file);
+
+    const processedPhoto = await getDownloadURL(
+      ref(storage, `avatar/${uniquePostId}`)
+    );
+
+    return processedPhoto;
   };
 
   return (
@@ -212,11 +238,11 @@ export default function RegistrationScreen({ navigation }) {
                     onBlur={() => {
                       setIsShowKeyboard(false), setEmailFocus(false);
                     }}
-                    value={state.email}
+                    value={state.userEmail}
                     onChangeText={(value) =>
                       setState((prevState) => ({
                         ...prevState,
-                        email: value,
+                        userEmail: value.toLowerCase(),
                       }))
                     }
                   />

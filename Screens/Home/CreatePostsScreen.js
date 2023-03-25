@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useSelector } from "react-redux";
 import {
   View,
   StyleSheet,
@@ -12,12 +13,14 @@ import {
   Keyboard,
 } from "react-native";
 
+//icons
 import {
   FontAwesome,
   SimpleLineIcons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 
+//font
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
@@ -27,6 +30,11 @@ import * as MediaLibrary from "expo-media-library";
 
 //location
 import * as Location from "expo-location";
+
+//storage
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../../firebase/config";
 
 const initialState = {
   name: "",
@@ -40,10 +48,10 @@ export const CreatePostsScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
-  const [photo, setPhoto] = useState(false);
 
   // load img
   const [image, setImage] = useState(null);
+  const [loaderDisabled, setLoaderDisabled] = useState(false);
 
   // input
   const [state, setState] = useState(initialState);
@@ -61,6 +69,8 @@ export const CreatePostsScreen = ({ navigation }) => {
   // keyboard
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
+  const { userId, nickName } = useSelector((stateRedux) => stateRedux.auth);
+
   //img
   const imgBtnStyle = (image) => {
     return image
@@ -75,11 +85,6 @@ export const CreatePostsScreen = ({ navigation }) => {
   const bottomTitleImg = (image) => {
     return image ? "Редактировать фото" : "Загрузите фото";
   };
-
-  // console.log(state.image);
-  // const bottomTitleImgLoad = (stateImage) => {
-  //   return stateImage ? bottomTitleImg(image) : "Loading ...";
-  // };
 
   //camera
   useEffect(() => {
@@ -143,18 +148,6 @@ export const CreatePostsScreen = ({ navigation }) => {
     return focus ? { ...styles.input, ...styles.inputFocus } : styles.input;
   };
 
-  const formSubmit = () => {
-    setImage(null);
-    navigation.navigate("Публикации", { state });
-    setState(initialState);
-    // console.log(state);
-  };
-
-  const clearForm = () => {
-    setImage(null);
-    setState(initialState);
-  };
-
   // btnSubmitDisabled
   const isFormValid =
     state.name && state.location && state.image && state.location;
@@ -171,8 +164,10 @@ export const CreatePostsScreen = ({ navigation }) => {
       : styles.btnTitle;
   };
 
+  // takePhoto
   const takePhoto = async () => {
     if (cameraRef && !image) {
+      setLoaderDisabled(true);
       const { uri } = await cameraRef.takePictureAsync();
       setImage(uri);
       const location = await Location.getCurrentPositionAsync();
@@ -181,7 +176,7 @@ export const CreatePostsScreen = ({ navigation }) => {
         image: uri,
         locationCoords: location,
       }));
-      await MediaLibrary.createAssetAsync(uri);
+      setLoaderDisabled(false);
     }
 
     // image && setImage(null);
@@ -196,8 +191,57 @@ export const CreatePostsScreen = ({ navigation }) => {
 
   const imgLoad = (statImg) => {
     return statImg.image
-      ? image
+      ? statImg.image
       : "https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921";
+  };
+
+  //send form
+  const formSubmit = () => {
+    uploadPostToServer();
+
+    setTimeout(() => {
+      setImage(null);
+      setState(initialState);
+    }, 500);
+
+    navigation.navigate("Публикации");
+  };
+
+  // storage
+  const uploadPostToServer = async () => {
+    const photo = await uploadPhotoToServer();
+
+    const createPost = await addDoc(collection(db, "posts"), {
+      ...state,
+      image: photo,
+      userId: userId,
+      nickName: nickName,
+      timeStamp: Date.now().toString(),
+    });
+  };
+
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(image);
+    const file = await response.blob();
+
+    const uniquePostId = Date.now().toString();
+
+    const storage = getStorage();
+    const storageRef = ref(storage, `images/${uniquePostId}`);
+
+    await uploadBytes(storageRef, file);
+
+    const processedPhoto = await getDownloadURL(
+      ref(storage, `images/${uniquePostId}`)
+    );
+
+    return processedPhoto;
+  };
+
+  // clear form
+  const clearForm = () => {
+    setImage(null);
+    setState(initialState);
   };
 
   return (
@@ -245,11 +289,11 @@ export const CreatePostsScreen = ({ navigation }) => {
                     />
                   </TouchableOpacity>
                 )}
-
                 <TouchableOpacity
                   style={imgBtnStyle(image)}
                   title="Pick an image from camera roll"
                   onPress={takePhoto}
+                  disabled={loaderDisabled}
                 >
                   <FontAwesome
                     name="camera"

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useSelector } from "react-redux";
 import {
   StyleSheet,
   Text,
@@ -8,58 +9,68 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
-  ListHeaderComponent,
 } from "react-native";
+//font
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-
+//icons
 import { FontAwesome, SimpleLineIcons } from "@expo/vector-icons";
-
-const POSTS = [
-  {
-    id: "123",
-    name: "Лес",
-    location: "Ivano-Frankivs'k Region, Ukraine",
-    image:
-      "https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80",
-  },
-  {
-    id: "1234",
-    name: "Море",
-    location: "Kherson Region, Ukraine",
-    image:
-      "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=652&q=80",
-  },
-  {
-    id: "1235",
-    name: "Гори",
-    location: "Ivano-Frankivs'k Region, Ukraine",
-    image:
-      "https://images.unsplash.com/photo-1602130707301-2f09f9d68179?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80",
-  },
-];
-
-const USER_DATA = {
-  login: "Natali Romanova",
-  email: "email@example.com",
-  image: "../../assets/images/Photo_BG.png",
-};
+//firestore
+import { db } from "../../firebase/config";
+import { collection, onSnapshot } from "firebase/firestore";
 
 export const DefaultPostsScreen = ({ navigation, route }) => {
   const [dimensions, setDimensions] = useState(
     Dimensions.get("window").width - 16 * 2
   );
   const [posts, setPosts] = useState([]);
-  const [userData, setUserData] = useState(USER_DATA);
 
-  // console.log(posts);
+  const { nickName, userAvatar, userEmail } = useSelector(
+    (stateRedux) => stateRedux.auth
+  );
 
-  // postData
+  //firebase
+  const getAllPosts = () => {
+    const postsRef = collection(db, "posts");
+    const postsUnsubscribe = onSnapshot(postsRef, (querySnapshot) => {
+      const updatedPosts = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+        commentNumber: 0,
+      }));
+
+      const commentUnsubscribes = updatedPosts.map((post) =>
+        onSnapshot(
+          collection(db, "posts", post.id, "comments"),
+          (commentsSnapshot) => {
+            const commentNumber = commentsSnapshot.docs.length;
+            setPosts((prevPosts) =>
+              prevPosts.map((prevPost) =>
+                prevPost.id === post.id
+                  ? { ...prevPost, commentNumber }
+                  : prevPost
+              )
+            );
+          }
+        )
+      );
+
+      setPosts(updatedPosts);
+
+      return () => {
+        commentUnsubscribes.forEach((unsubscribe) => unsubscribe());
+      };
+    });
+
+    return () => {
+      postsUnsubscribe();
+    };
+  };
+
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params.state]);
-    }
-  }, [route.params]);
+    const unsubscribe = getAllPosts();
+    return () => unsubscribe();
+  }, []);
 
   // width screen
   useEffect(() => {
@@ -92,20 +103,21 @@ export const DefaultPostsScreen = ({ navigation, route }) => {
     return null;
   }
 
+  const sortPosts = posts.sort(
+    (firstPost, secondPost) => firstPost.timeStamp - secondPost.timeStamp
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ width: dimensions }} onLayout={onLayoutRootView}>
         <FlatList
-          data={posts}
+          data={sortPosts}
           ListHeaderComponent={
             <View style={styles.userInfoWrapper}>
-              <Image
-                style={styles.userImg}
-                source={require("../../assets/images/Rectangle_22.png")}
-              />
+              <Image style={styles.userImg} source={{ uri: userAvatar }} />
               <View style={styles.userTitle}>
-                <Text style={styles.loginTitle}>{userData.login}</Text>
-                <Text style={styles.emailTitle}>{userData.email}</Text>
+                <Text style={styles.loginTitle}>{nickName}</Text>
+                <Text style={styles.emailTitle}>{userEmail}</Text>
               </View>
             </View>
           }
@@ -134,7 +146,7 @@ export const DefaultPostsScreen = ({ navigation, route }) => {
                   onPress={() => navigation.navigate("Comments", { item })}
                 >
                   <FontAwesome name="comment-o" size={24} color="#BDBDBD" />
-                  <Text style={styles.commentCount}>0</Text>
+                  <Text style={styles.commentCount}>{item.commentNumber}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   activeOpacity={0.8}

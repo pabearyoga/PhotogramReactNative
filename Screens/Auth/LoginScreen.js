@@ -16,13 +16,15 @@ import {
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
+import { useDispatch } from "react-redux";
+import { authSignInUser } from "../../redux/auth/authOperation";
+
 const initialState = {
   email: "",
   password: "",
 };
 
 export default function LoginScreen({ navigation }) {
-  // console.log(Platform.OS);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [dimensions, setDimensions] = useState(
@@ -35,6 +37,8 @@ export default function LoginScreen({ navigation }) {
   const [isSecurePassword, setIsSecurePassword] = useState(true);
   const [loginFocus, setLoginFocus] = useState(false);
   const [passwordFocus, setPasswordFocus] = useState(false);
+
+  const dispatch = useDispatch();
 
   const focusInputStyle = (focus) => {
     return focus ? { ...styles.input, ...styles.inputFocus } : styles.input;
@@ -60,7 +64,8 @@ export default function LoginScreen({ navigation }) {
   const formSubmit = () => {
     setState(initialState);
     setIsSecurePassword(true);
-    console.log(state);
+    // console.log(state);
+    dispatch(authSignInUser(state));
   };
 
   const passwordShown = () => {
@@ -137,7 +142,7 @@ export default function LoginScreen({ navigation }) {
                     onChangeText={(value) =>
                       setState((prevState) => ({
                         ...prevState,
-                        email: value,
+                        email: value.toLowerCase(),
                       }))
                     }
                   />

@@ -8,9 +8,18 @@ import { MapScreen } from "../Nested/MapScreen";
 
 import { Fontisto, Feather, AntDesign } from "@expo/vector-icons";
 
+// singOut
+import { useDispatch } from "react-redux";
+import { authSignOutUser } from "../../redux/auth/authOperation";
+
 const NestedScreen = createStackNavigator();
 
 export const PostsScreen = () => {
+  const dispatch = useDispatch();
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
+
   return (
     <NestedScreen.Navigator
       screenOptions={{
@@ -24,10 +33,7 @@ export const PostsScreen = () => {
         component={DefaultPostsScreen}
         options={{
           headerRight: () => (
-            <TouchableOpacity
-              style={{ marginRight: 20 }}
-              onPress={() => console.log("logout")}
-            >
+            <TouchableOpacity style={{ marginRight: 20 }} onPress={signOut}>
               <Feather name="log-out" size={24} color="#BDBDBD" />
             </TouchableOpacity>
           ),
