@@ -64,7 +64,6 @@ export default function LoginScreen({ navigation }) {
   const formSubmit = () => {
     setState(initialState);
     setIsSecurePassword(true);
-    // console.log(state);
     dispatch(authSignInUser(state));
   };
 
