@@ -9,7 +9,6 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
-  ListHeaderComponent,
   ImageBackground,
   TouchableWithoutFeedback,
 } from "react-native";
@@ -27,10 +26,11 @@ import {
 //firestore
 import { db } from "../../firebase/config";
 import { collection, onSnapshot } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // singOut
 import { useDispatch } from "react-redux";
-import { authSignOutUser } from "../../redux/auth/authOperation";
+import { authSignOutUser, updUserAvatar } from "../../redux/auth/authOperation";
 
 export const DefaultProfileScreen = ({ navigation, route }) => {
   const [image, setImage] = useState(userAvatar);
@@ -134,13 +134,42 @@ export const DefaultProfileScreen = ({ navigation, route }) => {
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+      return result.assets[0].uri;
     }
   };
+
+  // firebase storage uploadPhotoToServer;
+  const uploadPhotoToServer = async (photo) => {
+    const response = await fetch(photo);
+
+    const file = await response.blob();
+
+    const uniquePostId = Date.now().toString();
+
+    const storage = getStorage();
+    const storageRef = ref(storage, `avatar/${uniquePostId}`);
+
+    await uploadBytes(storageRef, file);
+
+    const processedPhoto = await getDownloadURL(
+      ref(storage, `avatar/${uniquePostId}`)
+    );
+
+    return processedPhoto;
+  };
+
+  // onClick addImg btn
+  const updUserPhoto = async () => {
+    const img = await pickImage();
+    const photo = await uploadPhotoToServer(img);
+    dispatch(updUserAvatar(photo));
+  };
+
   const addImg = () => {
     return (
       <TouchableOpacity
         title="Pick an image from camera roll"
-        onPress={pickImage}
+        onPress={updUserPhoto}
       >
         <View style={{ backgroundColor: "#fff", borderRadius: 100 }}>
           <AntDesign name="pluscircleo" size={24} color="#FF6C00" />
