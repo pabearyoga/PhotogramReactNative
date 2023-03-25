@@ -41,7 +41,7 @@ export const authSignUpUser =
 
 export const authSignInUser =
   ({ email, password }) =>
-  async (dispatch, getSatte) => {
+  async (dispatch, getState) => {
     try {
       await signInWithEmailAndPassword(getAuth(), email, password);
     } catch (error) {
@@ -77,7 +77,7 @@ export const authStateCahngeUser = () => async (dispatch, getState) => {
   });
 };
 
-export const updUserAvatar = (image) => async (dispatch, getSatte) => {
+export const updUserAvatar = (image) => async (dispatch, getState) => {
   try {
     const user = await getAuth().currentUser;
 

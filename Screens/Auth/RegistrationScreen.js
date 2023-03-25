@@ -152,9 +152,7 @@ export default function RegistrationScreen({ navigation }) {
   // storage;
   const uploadPhotoToServer = async () => {
     const response = await fetch(image);
-    // console.log("response:", response);
     const file = await response.blob();
-    // console.log("file:", file);
 
     const uniquePostId = Date.now().toString();
 
