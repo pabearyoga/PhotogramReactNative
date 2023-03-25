@@ -145,14 +145,16 @@ export default function RegistrationScreen({ navigation }) {
   const formSubmit = async () => {
     const photo = image
       ? await uploadPhotoToServer()
-      : "https://img.myloview.com/stickers/default-avatar-profile-icon-vector-social-media-user-image-700-205124837.jpg";
+      : "https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg";
     dispatch(authSignUpUser({ ...state, image: photo }));
   };
 
   // storage;
   const uploadPhotoToServer = async () => {
     const response = await fetch(image);
+    // console.log("response:", response);
     const file = await response.blob();
+    // console.log("file:", file);
 
     const uniquePostId = Date.now().toString();
 
