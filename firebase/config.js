@@ -11,19 +11,5 @@ const firebaseConfig = {
   measurementId: "G-B5ZSQSD3LH",
 };
 
-// Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
-
-// const db = firebase.firestore();
-
-// export const addDataToFirestore = async (collectionName, data) => {
-//   try {
-//     const docRef = await db.collection(collectionName).add(data);
-//     console.log("Document written with ID: ", docRef.id);
-//     return docRef.id;
-//   } catch (error) {
-//     console.error("Error adding document: ", error);
-//     return null;
-//   }
-// };
