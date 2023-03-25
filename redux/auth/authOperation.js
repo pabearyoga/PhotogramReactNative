@@ -13,7 +13,6 @@ import { authSlice } from "./authReducer";
 export const authSignUpUser =
   ({ login, userEmail, password, image }) =>
   async (dispatch, getSatte) => {
-    // console.log("login, email, password", login, email, password);
     try {
       await createUserWithEmailAndPassword(getAuth(), userEmail, password);
 
@@ -34,7 +33,6 @@ export const authSignUpUser =
       };
 
       dispatch(authSlice.actions.updateUserProfile(userUpdateProfile));
-      //   console.log("user", user);
     } catch (error) {
       console.log("error", error);
       console.log("error.message", error.message);
@@ -77,4 +75,26 @@ export const authStateCahngeUser = () => async (dispatch, getState) => {
       dispatch(authSlice.actions.updateUserProfile(userUpdateProfile));
     }
   });
+};
+
+export const updUserAvatar = (image) => async (dispatch, getSatte) => {
+  try {
+    const user = await getAuth().currentUser;
+
+    await updateProfile(user, {
+      photoURL: image,
+    });
+
+    const userUpdateProfile = {
+      userId: user.uid,
+      nickName: user.displayName,
+      userAvatar: user.photoURL,
+      userEmail: user.email,
+    };
+
+    dispatch(authSlice.actions.updateUserProfile(userUpdateProfile));
+  } catch (error) {
+    console.log("error", error);
+    console.log("error.message", error.message);
+  }
 };
