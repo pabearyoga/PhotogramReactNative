@@ -219,7 +219,7 @@ export const DefaultProfileScreen = ({ navigation, route }) => {
           style={{
             ...styles.formWrapper,
             width: dimensions + 16 * 2,
-            paddingBottom: 185,
+            paddingBottom: filterUserPost.length > 1 ? 185 : 300,
           }}
         >
           <View
