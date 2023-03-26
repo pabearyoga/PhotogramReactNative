@@ -310,7 +310,7 @@ export const DefaultProfileScreen = ({ navigation, route }) => {
                     <TouchableOpacity
                       activeOpacity={0.8}
                       style={styles.commentWrapper}
-                      onPress={() => navigation.navigate("Map")}
+                      onPress={() => navigation.navigate("Map", { item })}
                     >
                       <SimpleLineIcons
                         name="location-pin"
