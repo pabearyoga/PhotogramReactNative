@@ -24,6 +24,7 @@
     "expo-media-library": "~15.0.0",
     "expo-splash-screen": "^0.17.5",
     "expo-status-bar": "~1.4.2",
+    "expo-updates": "~0.15.6",
     "firebase": "^9.17.2",
     "install": "^0.13.0",
     "moment": "^2.29.4",
@@ -35,8 +36,7 @@
     "react-native-safe-area-context": "4.4.1",
     "react-native-screens": "~3.18.0",
     "react-native-vector-icons": "^9.2.0",
-    "react-redux": "^8.0.5",
-    "expo-updates": "~0.15.6"
+    "react-redux": "^8.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
