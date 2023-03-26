@@ -23,6 +23,7 @@ import { Ionicons } from "@expo/vector-icons";
 // import { useSelector } from "react-redux";
 import { db } from "../../firebase/config";
 import { collection, addDoc, onSnapshot } from "firebase/firestore";
+import { block } from "react-native-reanimated";
 
 export const CommentsScreen = ({ route }) => {
   const postId = route.params.item.id;
@@ -110,7 +111,7 @@ export const CommentsScreen = ({ route }) => {
             >
               <View
                 style={{
-                  width: 300,
+                  width: "86%",
                   backgroundColor: "rgba(0, 0, 0, 0.03)",
                   marginBottom: 24,
                   borderBottomEndRadius: 6,
