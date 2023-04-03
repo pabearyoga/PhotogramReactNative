@@ -1,4 +1,4 @@
-import { app } from "../../firebase/config";
+import { app, db } from "../../firebase/config";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -9,6 +9,12 @@ import {
 } from "firebase/auth";
 
 import { authSlice } from "./authReducer";
+
+// import {
+//   saveAuthenticationState,
+//   getAuthenticationState,
+//   deleteAuthenticationState,
+// } from "../../helper/SecureStore";
 
 export const authSignUpUser =
   ({ login, userEmail, password, image }) =>
@@ -43,7 +49,8 @@ export const authSignInUser =
   ({ email, password }) =>
   async (dispatch, getState) => {
     try {
-      await signInWithEmailAndPassword(getAuth(), email, password);
+      const auth = getAuth();
+      await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
       console.log("error", error);
       console.log("error.message", error.message);
@@ -52,29 +59,35 @@ export const authSignInUser =
 
 export const authSignOutUser = () => async (dispatch, getState) => {
   const auth = getAuth();
-  await signOut(auth);
+  await auth.signOut();
   dispatch(authSlice.actions.authSignOut());
 };
 
-export const authStateCahngeUser = () => async (dispatch, getState) => {
-  const auth = getAuth();
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      const userUpdateProfile = {
-        userId: user.uid,
-        nickName: user.displayName,
-        userAvatar: user.photoURL,
-        userEmail: user.email,
-      };
+export const authStateChangeUser = () => async (dispatch, getState) => {
+  try {
+    const auth = getAuth();
 
-      const stateChange = {
-        stateChange: true,
-      };
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        const userUpdateProfile = {
+          userId: user.uid,
+          nickName: user.displayName,
+          userAvatar: user.photoURL,
+          userEmail: user.email,
+        };
 
-      dispatch(authSlice.actions.authStateChange(stateChange));
-      dispatch(authSlice.actions.updateUserProfile(userUpdateProfile));
-    }
-  });
+        dispatch(authSlice.actions.updateUserProfile(userUpdateProfile));
+        dispatch(
+          authSlice.actions.authStateChange({
+            stateChange: true,
+          })
+        );
+      }
+    });
+  } catch (error) {
+    console.log("error", error);
+    console.log("error.message", error.message);
+  }
 };
 
 export const updUserAvatar = (image) => async (dispatch, getState) => {
