@@ -36,7 +36,6 @@ export const CommentsScreen = ({ route }) => {
   useEffect(() => {
     getAllPosts();
   }, []);
-  console.log(comment);
 
   const createPost = async () => {
     const commentsRef = collection(db, "posts", postId, "comments");
