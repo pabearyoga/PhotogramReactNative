@@ -1,4 +1,4 @@
-import { app, db } from "../../firebase/config";
+// import { app, db } from "../../firebase/config";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -9,12 +9,6 @@ import {
 } from "firebase/auth";
 
 import { authSlice } from "./authReducer";
-
-// import {
-//   saveAuthenticationState,
-//   getAuthenticationState,
-//   deleteAuthenticationState,
-// } from "../../helper/SecureStore";
 
 export const authSignUpUser =
   ({ login, userEmail, password, image }) =>
@@ -59,7 +53,7 @@ export const authSignInUser =
 
 export const authSignOutUser = () => async (dispatch, getState) => {
   const auth = getAuth();
-  await auth.signOut();
+  await signOut(auth);
   dispatch(authSlice.actions.authSignOut());
 };
 
@@ -67,7 +61,7 @@ export const authStateChangeUser = () => async (dispatch, getState) => {
   try {
     const auth = getAuth();
 
-    auth.onAuthStateChanged((user) => {
+    onAuthStateChanged(auth, (user) => {
       if (user) {
         const userUpdateProfile = {
           userId: user.uid,

@@ -23,7 +23,7 @@ import { Ionicons } from "@expo/vector-icons";
 // import { useSelector } from "react-redux";
 import { db } from "../../firebase/config";
 import { collection, addDoc, onSnapshot } from "firebase/firestore";
-import { block } from "react-native-reanimated";
+// import { block } from "react-native-reanimated";
 
 export const CommentsScreen = ({ route }) => {
   const postId = route.params.item.id;
