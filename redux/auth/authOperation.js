@@ -1,4 +1,3 @@
-// import { app, db } from "../../firebase/config";
 import {
   getAuth,
   createUserWithEmailAndPassword,
