@@ -20,7 +20,6 @@ import * as SplashScreen from "expo-splash-screen";
 
 import { Ionicons } from "@expo/vector-icons";
 
-// import { useSelector } from "react-redux";
 import { db } from "../../firebase/config";
 import { collection, addDoc, onSnapshot } from "firebase/firestore";
 
@@ -46,8 +45,13 @@ export const CommentsScreen = ({ route }) => {
       userAvatar: userAvatar,
       timeStamp: Date.now().toString(),
     });
-    setComment("");
+
     keyboardHide();
+  };
+
+  const sbmComment = () => {
+    createPost();
+    setComment("");
   };
 
   const getAllPosts = async () => {
@@ -92,7 +96,6 @@ export const CommentsScreen = ({ route }) => {
       <View
         style={{ paddingHorizontal: 16, paddingBottom: 60 }}
         onLayout={onLayoutRootView}
-        // onPress={keyboardHide}
       >
         <FlatList
           data={sortPosts}
@@ -110,7 +113,7 @@ export const CommentsScreen = ({ route }) => {
             >
               <View
                 style={{
-                  width: 300,
+                  width: "86%",
                   backgroundColor: "rgba(0, 0, 0, 0.03)",
                   marginBottom: 24,
                   borderBottomEndRadius: 6,
@@ -160,8 +163,8 @@ export const CommentsScreen = ({ route }) => {
         <TouchableOpacity
           activeOpacity={0.8}
           style={styles.sendComment}
-          // onPress={commentSubmit}
-          onPress={createPost}
+          // onPress={createPost}
+          onPress={sbmComment}
         >
           <Ionicons name="arrow-up-outline" size={24} color="#fff" />
         </TouchableOpacity>
