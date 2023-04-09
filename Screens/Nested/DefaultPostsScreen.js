@@ -104,7 +104,7 @@ export const DefaultPostsScreen = ({ navigation, route }) => {
   }
 
   const sortPosts = posts.sort(
-    (firstPost, secondPost) => firstPost.timeStamp - secondPost.timeStamp
+    (firstPost, secondPost) => secondPost.timeStamp - firstPost.timeStamp
   );
 
   return (

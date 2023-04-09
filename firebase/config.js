@@ -7,13 +7,13 @@ import {
 } from "firebase/auth/react-native";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAr7lE4bByl8EaK0Bji-l6eAzh_575-Z9c",
-  authDomain: "reactnatine.firebaseapp.com",
-  projectId: "reactnatine",
-  storageBucket: "reactnatine.appspot.com",
-  messagingSenderId: "882128343506",
-  appId: "1:882128343506:web:d9afe5aa77f7d1b389f80b",
-  measurementId: "G-B5ZSQSD3LH",
+  apiKey: "AIzaSyA2SdoPMSsb7cmTjBzqvDnqe714d5Zek04",
+  authDomain: "photogram-81530.firebaseapp.com",
+  projectId: "photogram-81530",
+  storageBucket: "photogram-81530.appspot.com",
+  messagingSenderId: "793678575749",
+  appId: "1:793678575749:web:37d0e25d1c16a80c2751ec",
+  measurementId: "G-0EN5G0S2G8",
 };
 
 export const app = initializeApp(firebaseConfig);
