@@ -47,6 +47,9 @@ export const authSignInUser =
     } catch (error) {
       console.log("error", error);
       console.log("error.message", error.message);
+      if (error.message === "auth/invalid-email" || "auth/wrong-password") {
+        alert("Адрес электронной почты или пароль не верны !");
+      }
     }
   };
 
