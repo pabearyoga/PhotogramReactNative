@@ -203,7 +203,7 @@ export const DefaultProfileScreen = ({ navigation, route }) => {
   const filterUserPost = posts
     .filter((post) => post.userId === userId)
     .sort(
-      (firstPost, secondPost) => firstPost.timeStamp - secondPost.timeStamp
+      (firstPost, secondPost) => secondPost.timeStamp - firstPost.timeStamp
     );
 
   return (
